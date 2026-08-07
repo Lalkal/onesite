@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bike Registration Form</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+background:#f3f6fb;
+padding:30px;
+}
+
+.container{
+max-width:750px;
+margin:auto;
+background:#fff;
+padding:30px;
+border-radius:12px;
+box-shadow:0 10px 30px rgba(0,0,0,.1);
+}
+
+h2{
+text-align:center;
+margin-bottom:25px;
+color:#1d3557;
+}
+
+.page-header{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:12px;
+margin-bottom:20px;
+}
+
+.back-link{
+display:inline-flex;
+align-items:center;
+justify-content:center;
+padding:10px 14px;
+border-radius:8px;
+background:#e9f2ff;
+color:#1d3557;
+text-decoration:none;
+font-weight:bold;
+}
+
+.back-link:hover{
+background:#dbeafe;
+}
+
+.page-header h2{
+margin:0;
+flex:1;
+text-align:center;
+}
+
+.form-group{
+margin-bottom:18px;
+}
+
+label{
+display:block;
+font-weight:bold;
+margin-bottom:6px;
+color:#333;
+}
+
+input,select{
+width:100%;
+padding:12px;
+border:1px solid #ccc;
+border-radius:8px;
+font-size:15px;
+}
+
+input:focus,select:focus{
+outline:none;
+border-color:#007bff;
+}
+
+.preview{
+margin-top:10px;
+display:none;
+max-width:180px;
+border-radius:8px;
+border:1px solid #ddd;
+}
+
+.buttons{
+display:flex;
+gap:10px;
+margin-top:20px;
+}
+
+button{
+flex:1;
+padding:13px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-size:16px;
+font-weight:bold;
+}
+
+.qrcode{
+display:none;
+flex-direction:column;
+align-items:center;
+gap:10px;
+margin-top:20px;
+}
+
+.qr-actions{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+justify-content:center;
+}
+
+.qr-actions button{
+flex:initial;
+padding:10px 14px;
+font-size:14px;
+}
+
+.save{
+background:#007bff;
+color:white;
+}
+
+.clear{
+background:#dc3545;
+color:white;
+}
+
+.success{
+text-align:center;
+margin-top:20px;
+font-weight:bold;
+color:green;
+}
+
+@media(max-width:600px){
+
+.container{
+padding:20px;
+}
+
+.buttons{
+flex-direction:column;
+}
+
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<div class="page-header">
+<a href="index.html" class="back-link">← Back</a>
+<h2>STAG</h2>
+</div>
+
+<h2>Bike Registration Form</h2>
+
+<form id="registrationForm">
+
+<div class="form-group">
+<label>Name</label>
+<input type="text" id="name" required>
+</div>
+
+<div class="form-group">
+<label>Mobile No</label>
+<input type="tel" id="mobile" maxlength="10" pattern="[0-9]{10}" required>
+</div>
+
+<div class="form-group">
+<label>Blood Group</label>
+<select id="blood" required>
+<option value="">Select Blood Group</option>
+<option>A+</option>
+<option>A-</option>
+<option>B+</option>
+<option>B-</option>
+<option>AB+</option>
+<option>AB-</option>
+<option>O+</option>
+<option>O-</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Email</label>
+<input type="email" id="email">
+</div>
+
+<div class="form-group">
+<label>Registration No</label>
+<input type="text" id="regno" required>
+</div>
+
+<div class="form-group">
+<label>RC Book Upload</label>
+<input type="file" id="rcbook" accept="image/*">
+<img id="rcPreview" class="preview">
+</div>
+
+<div class="form-group">
+<label>Bike Insurance Upload</label>
+<input type="file" id="bikeInsurance" accept="image/*">
+<img id="insurancePreview" class="preview">
+</div>
+
+<div class="form-group">
+<label>Bike Insurance Valid Through</label>
+<input type="date" id="insuranceDate">
+</div>
+
+<div class="form-group">
+<label>Medical Insurance Brand Name</label>
+<input type="text" id="medicalBrand">
+</div>
+
+<div class="form-group">
+<label>Medical Insurance Number</label>
+<input type="text" id="medicalNo">
+</div>
+
+<div class="form-group">
+<label>Emergency Contact No. 1</label>
+<input type="tel" id="emergency1" maxlength="10">
+</div>
+
+<div class="form-group">
+<label>Emergency Contact No. 2</label>
+<input type="tel" id="emergency2" maxlength="10">
+</div>
+
+<div class="buttons">
+<button type="submit" class="save">Save</button>
+<button type="reset" class="clear">Clear</button>
+</div>
+
+</form>
+
+<div class="success" id="msg"></div>
+<div id="qrcodeWrap" class="qrcode">
+<div class="qr-actions">
+<button type="button" id="downloadAllBtn" class="save">Download QR & JSON</button>
+</div>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+
+function previewImage(input, previewId){
+
+const file=input.files[0];
+
+if(file){
+
+const reader=new FileReader();
+
+reader.onload=function(e){
+
+const img=document.getElementById(previewId);
+img.src=e.target.result;
+img.style.display="block";
+
+}
+
+reader.readAsDataURL(file);
+
+}
+
+}
+
+function readFileAsDataURL(file){
+return new Promise((resolve,reject)=>{
+if(!file){
+resolve("");
+return;
+}
+
+const reader=new FileReader();
+reader.onload=function(e){
+resolve(e.target.result);
+};
+reader.onerror=function(){
+reject("Unable to read file");
+};
+reader.readAsDataURL(file);
+});
+}
+
+document.getElementById("rcbook").addEventListener("change",function(){
+previewImage(this,"rcPreview");
+});
+
+document.getElementById("bikeInsurance").addEventListener("change",function(){
+previewImage(this,"insurancePreview");
+});
+
+document.getElementById("registrationForm").addEventListener("submit",async function(e){
+
+e.preventDefault();
+
+const rcFile=document.getElementById("rcbook").files[0];
+const insuranceFile=document.getElementById("bikeInsurance").files[0];
+
+const [rcDataUrl,insuranceDataUrl]=await Promise.all([
+readFileAsDataURL(rcFile),
+readFileAsDataURL(insuranceFile)
+]);
+
+const data={
+
+name:document.getElementById("name").value,
+mobile:document.getElementById("mobile").value,
+blood:document.getElementById("blood").value,
+email:document.getElementById("email").value,
+registrationNo:document.getElementById("regno").value,
+insuranceDate:document.getElementById("insuranceDate").value,
+medicalBrand:document.getElementById("medicalBrand").value,
+medicalNo:document.getElementById("medicalNo").value,
+emergency1:document.getElementById("emergency1").value,
+emergency2:document.getElementById("emergency2").value,
+rcbook:rcDataUrl,
+bikeInsurance:insuranceDataUrl
+
+};
+
+localStorage.setItem("BikeRegistration",JSON.stringify(data));
+console.log("Registration Data Saved:",data);
+console.log("RC Book Image (base64):",rcDataUrl);
+console.log("Bike Insurance Image (base64):",insuranceDataUrl);
+
+document.getElementById("msg").innerHTML="Registration Saved Successfully ✔";
+const qrContainer=document.getElementById("qrcodeWrap");
+qrContainer.style.display="flex";
+qrContainer.innerHTML='<div class="qr-actions"><button type="button" id="downloadAllBtn" class="save">Download QR & JSON</button></div>';
+const qrCanvas=document.createElement("canvas");
+qrContainer.prepend(qrCanvas);
+const qrText=JSON.stringify(data,null,2);
+new QRCode(qrCanvas,{text:qrText,width:220,height:220,colorDark:"#1d3557",colorLight:"#ffffff"});
+
+document.getElementById("downloadAllBtn").addEventListener("click",function(){
+const qrLink=document.createElement("a");
+qrLink.href=qrCanvas.toDataURL("image/png");
+qrLink.download="bike-registration-qr.png";
+qrLink.click();
+
+const jsonBlob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+const jsonLink=document.createElement("a");
+jsonLink.href=URL.createObjectURL(jsonBlob);
+jsonLink.download="bike-registration.json";
+jsonLink.click();
+URL.revokeObjectURL(jsonLink.href);
+});
+
+});
+
+</script>
+
+</body>
+</html>
