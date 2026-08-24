@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LOGANX — New Product</title>
+<link rel="stylesheet" href="blank.css">
+</head>
+<body>
+<main class="blank-page">
+  <a href="index.html" class="brand"><span>LOGAN</span>X</a>
+  <div class="blank-card">
+    <div class="tag">NEW LOGANX PRODUCT</div>
+    <div class="plus">+</div>
+    <h1 id="title">Your New Product</h1>
+    <p>This is a blank product landing page. Replace this content with your next LOGANX software product.</p>
+    <a href="index.html" class="btn">← Back to products</a>
+  </div>
+</main>
+<script>
+const p = new URLSearchParams(location.search).get("product");
+if (p) document.getElementById("title").textContent = p;
+</script>
+</body>
+</html>

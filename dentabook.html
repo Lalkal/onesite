@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#5b5cf0">
+<title>DentaBook — LOGANX</title>
+<link rel="stylesheet" href="dentabook.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html"><span>LOGAN</span>X</a>
+  <a class="back" href="index.html">← Back to LOGANX</a>
+</header>
+
+<main>
+<section class="hero">
+  <div class="hero-copy">
+    <div class="eyebrow">DENTABOOK · DENTAL CLINIC SOFTWARE</div>
+    <h1>Manage your clinic.<br><span>Care for your patients.</span></h1>
+    <p>Simple clinic software for appointments, patients, treatment records and follow-ups.</p>
+    <a class="cta" href="#app">Open DentaBook</a>
+  </div>
+  <div class="hero-art">
+    <div class="pulse"></div>
+    <div class="tooth">✦</div>
+    <div class="mini-card"><b>Today's appointments</b><strong id="heroCount">0</strong><small>stored in this browser</small></div>
+  </div>
+</section>
+
+<section class="features">
+  <article><b>01</b><h3>Appointment booking</h3><p>Book, edit and track patient appointments.</p></article>
+  <article><b>02</b><h3>Patient profiles & history</h3><p>Keep contact details and clinical notes organized.</p></article>
+  <article><b>03</b><h3>Doctor calendar management</h3><p>View your clinic schedule and appointment status.</p></article>
+  <article><b>04</b><h3>Mail reminder-ready</h3><p>Prepare patient reminder emails from appointment data.</p></article>
+  <article><b>05</b><h3>Invoices & payment tracking</h3><p>Record invoice totals and payment status.</p></article>
+</section>
+
+<section class="app" id="app">
+  <div class="app-head">
+    <div><div class="eyebrow">DENTABOOK DEMO</div><h2>Clinic dashboard</h2></div>
+    <span id="dbStatus" class="db-status">Database ready</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="appointments">Appointments</button>
+    <button class="tab" data-tab="patients">Patients</button>
+    <button class="tab" data-tab="invoices">Invoices</button>
+  </div>
+
+  <div id="appointments" class="panel active">
+    <form id="appointmentForm" class="form">
+      <h3>New appointment</h3>
+      <div class="form-grid">
+        <label>Patient name<input id="aPatient" required></label>
+        <label>Mobile<input id="aMobile" type="tel"></label>
+        <label>Doctor<input id="aDoctor" required></label>
+        <label>Date<input id="aDate" type="date" required></label>
+        <label>Time<input id="aTime" type="time" required></label>
+        <label>Reason<input id="aReason" placeholder="Check-up / cleaning / treatment"></label>
+      </div>
+      <button class="primary" type="submit">Save Appointment</button>
+    </form>
+    <div class="table-wrap"><table><thead><tr><th>Date</th><th>Time</th><th>Patient</th><th>Doctor</th><th>Reason</th><th>Status</th><th></th></tr></thead><tbody id="appointmentRows"></tbody></table></div>
+  </div>
+
+  <div id="patients" class="panel">
+    <form id="patientForm" class="form">
+      <h3>Patient profile</h3>
+      <div class="form-grid">
+        <label>Name<input id="pName" required></label>
+        <label>Mobile<input id="pMobile" type="tel"></label>
+        <label>Email<input id="pEmail" type="email"></label>
+        <label>Date of birth<input id="pDob" type="date"></label>
+        <label class="wide">History / treatment notes<textarea id="pNotes" rows="3"></textarea></label>
+      </div>
+      <button class="primary" type="submit">Save Patient</button>
+    </form>
+    <div class="table-wrap"><table><thead><tr><th>Patient</th><th>Mobile</th><th>Email</th><th>DOB</th><th>Notes</th><th></th></tr></thead><tbody id="patientRows"></tbody></table></div>
+  </div>
+
+  <div id="invoices" class="panel">
+    <form id="invoiceForm" class="form">
+      <h3>Invoice & payment</h3>
+      <div class="form-grid">
+        <label>Patient name<input id="iPatient" required></label>
+        <label>Invoice no.<input id="iNo" required></label>
+        <label>Amount<input id="iAmount" type="number" min="0" step="0.01" required></label>
+        <label>Status<select id="iStatus"><option>Pending</option><option>Paid</option><option>Partially Paid</option></select></label>
+        <label class="wide">Description<input id="iDesc"></label>
+      </div>
+      <button class="primary" type="submit">Save Invoice</button>
+    </form>
+    <div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Patient</th><th>Amount</th><th>Status</th><th>Description</th><th></th></tr></thead><tbody id="invoiceRows"></tbody></table></div>
+  </div>
+</section>
+</main>
+<script src="dentabook.js"></script>
+</body>
+</html>

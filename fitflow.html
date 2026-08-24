@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#5b5cf0">
+<title>FitFlow — LOGANX</title>
+<link rel="stylesheet" href="fitflow.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html"><span>LOGAN</span>X</a>
+  <a class="back" href="index.html">← Back to LOGANX</a>
+</header>
+
+<main>
+<section class="hero">
+  <div>
+    <div class="eyebrow">FITFLOW · GYM & FITNESS SOFTWARE</div>
+    <h1>Run your gym.<br><span>Build stronger members.</span></h1>
+    <p>Membership and gym management software that keeps trainers, members and payments organized.</p>
+    <a class="cta" href="#app">Open FitFlow</a>
+  </div>
+  <div class="hero-art">
+    <div class="ring ring-a"></div><div class="ring ring-b"></div>
+    <div class="bolt">⚡</div>
+    <div class="mini-card"><b>Active members</b><strong id="heroMembers">0</strong><small>saved in this browser</small></div>
+  </div>
+</section>
+
+<section class="features">
+  <article><b>01</b><h3>Member registration & profiles</h3><p>Keep member contact, joining date and fitness details organized.</p></article>
+  <article><b>02</b><h3>Membership plans & renewals</h3><p>Track plans, expiry dates and renewal status.</p></article>
+  <article><b>03</b><h3>Attendance tracking</h3><p>Record daily member check-ins and monitor attendance.</p></article>
+  <article><b>04</b><h3>Payment reminders & receipts</h3><p>Record payments and prepare reminder-ready information.</p></article>
+  <article><b>05</b><h3>Trainer & workout management</h3><p>Assign trainers and store workout/program details.</p></article>
+</section>
+
+<section class="app" id="app">
+  <div class="app-head">
+    <div><div class="eyebrow">FITFLOW DEMO</div><h2>Gym dashboard</h2></div>
+    <span id="dbStatus" class="db-status">Database ready</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="members">Members</button>
+    <button class="tab" data-tab="attendance">Attendance</button>
+    <button class="tab" data-tab="payments">Payments</button>
+    <button class="tab" data-tab="trainers">Trainers & Workouts</button>
+  </div>
+
+  <div id="members" class="panel active">
+    <form id="memberForm" class="form">
+      <h3>Register member</h3>
+      <div class="form-grid">
+        <label>Name<input id="mName" required></label>
+        <label>Mobile<input id="mMobile" type="tel"></label>
+        <label>Email<input id="mEmail" type="email"></label>
+        <label>Membership plan<input id="mPlan" placeholder="Monthly / Quarterly / Annual" required></label>
+        <label>Start date<input id="mStart" type="date" required></label>
+        <label>Expiry date<input id="mExpiry" type="date" required></label>
+        <label>Trainer<input id="mTrainer"></label>
+        <label>Fitness goal<input id="mGoal" placeholder="Weight loss / strength"></label>
+      </div>
+      <button class="primary" type="submit">Save Member</button>
+    </form>
+    <div class="table-wrap"><table><thead><tr><th>Member</th><th>Mobile</th><th>Plan</th><th>Expiry</th><th>Trainer</th><th>Goal</th><th></th></tr></thead><tbody id="memberRows"></tbody></table></div>
+  </div>
+
+  <div id="attendance" class="panel">
+    <form id="attendanceForm" class="form">
+      <h3>Record attendance</h3>
+      <div class="form-grid">
+        <label>Member name<input id="aMember" required></label>
+        <label>Date<input id="aDate" type="date" required></label>
+        <label>Check-in time<input id="aTime" type="time" required></label>
+        <label>Trainer<input id="aTrainer"></label>
+      </div>
+      <button class="primary" type="submit">Save Attendance</button>
+    </form>
+    <div class="table-wrap"><table><thead><tr><th>Member</th><th>Date</th><th>Check-in</th><th>Trainer</th><th></th></tr></thead><tbody id="attendanceRows"></tbody></table></div>
+  </div>
+
+  <div id="payments" class="panel">
+    <form id="paymentForm" class="form">
+      <h3>Payment & receipt</h3>
+      <div class="form-grid">
+        <label>Member name<input id="pMember" required></label>
+        <label>Receipt no.<input id="pReceipt" required></label>
+        <label>Amount<input id="pAmount" type="number" min="0" step="0.01" required></label>
+        <label>Payment date<input id="pDate" type="date" required></label>
+        <label>Status<select id="pStatus"><option>Paid</option><option>Pending</option><option>Partially Paid</option></select></label>
+        <label>Payment method<select id="pMethod"><option>Cash</option><option>UPI</option><option>Card</option><option>Bank Transfer</option></select></label>
+        <label class="wide">Notes<input id="pNotes"></label>
+      </div>
+      <button class="primary" type="submit">Save Payment</button>
+    </form>
+    <div class="table-wrap"><table><thead><tr><th>Receipt</th><th>Member</th><th>Amount</th><th>Date</th><th>Status</th><th>Method</th><th></th></tr></thead><tbody id="paymentRows"></tbody></table></div>
+  </div>
+
+  <div id="trainers" class="panel">
+    <form id="trainerForm" class="form">
+      <h3>Trainer & workout</h3>
+      <div class="form-grid">
+        <label>Trainer name<input id="tName" required></label>
+        <label>Specialization<input id="tSpecialization" placeholder="Strength / Yoga / Cardio"></label>
+        <label>Member name<input id="tMember"></label>
+        <label class="wide">Workout / program<textarea id="tWorkout" rows="3" placeholder="Exercises, sets, reps, schedule..."></textarea></label>
+      </div>
+      <button class="primary" type="submit">Save Trainer Program</button>
+    </form>
+    <div class="table-wrap"><table><thead><tr><th>Trainer</th><th>Specialization</th><th>Member</th><th>Workout</th><th></th></tr></thead><tbody id="trainerRows"></tbody></table></div>
+  </div>
+</section>
+</main>
+<script src="fitflow.js"></script>
+</body>
+</html>

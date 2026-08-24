@@ -1,0 +1,19 @@
+{
+  "name": "LOGANX Business Software",
+  "short_name": "LOGANX",
+  "description": "LOGANX business software for retail POS, gyms and dental clinics.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#5b5cf0",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
