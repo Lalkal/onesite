@@ -1,339 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Business software for retail POS, gyms and dental appointment management.">
-  <title>LOGANX — Business Software Solutions</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-
-  <meta name="theme-color" content="#5b5cf0">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="LOGANX">
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="icon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOGANX — Websites That Help Businesses Grow</title>
+<meta name="description" content="LOGANX builds fast, professional websites for local businesses, retailers, clinics, gyms, restaurants, salons and service businesses.">
+<meta name="keywords" content="website design, business website, local business website, ecommerce website, LOGANX">
+<meta name="theme-color" content="#0b0d12">
+<style>
+:root{
+  --bg:#080a0f;--panel:#10131b;--panel2:#151923;--text:#f6f7fb;--muted:#9da5b5;
+  --line:rgba(255,255,255,.09);--accent:#8cff5b;--accent2:#5ee7ff;
+  --max:1180px;--radius:22px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:
+radial-gradient(circle at 80% 0%,rgba(94,231,255,.09),transparent 30%),
+radial-gradient(circle at 10% 10%,rgba(140,255,91,.07),transparent 25%),var(--bg);color:var(--text);line-height:1.6}
+a{color:inherit;text-decoration:none}
+.container{width:min(calc(100% - 40px),var(--max));margin:auto}
+nav{position:sticky;top:0;z-index:20;background:rgba(8,10,15,.78);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+.navin{height:76px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:900;font-size:25px;letter-spacing:-1px}.logo span{color:var(--accent)}
+.links{display:flex;gap:28px;color:#cbd0db;font-size:14px}.links a:hover{color:var(--accent)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 19px;border-radius:13px;border:1px solid var(--line);font-weight:750;font-size:14px;transition:.25s;cursor:pointer}
+.btn:hover{transform:translateY(-2px);border-color:rgba(140,255,91,.5)}
+.btn-primary{background:var(--accent);color:#071006;border-color:var(--accent)}
+.btn-dark{background:#121620}
+.menu{display:none;background:none;border:0;color:white;font-size:25px}
+.hero{padding:110px 0 85px;position:relative;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:65px;align-items:center}
+.eyebrow{display:inline-flex;padding:7px 11px;border:1px solid rgba(140,255,91,.25);background:rgba(140,255,91,.06);border-radius:999px;color:var(--accent);font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase}
+h1{font-size:clamp(48px,7vw,84px);line-height:.96;letter-spacing:-4px;margin:20px 0}
+h1 em{font-style:normal;color:var(--accent)}
+.hero p{font-size:18px;color:var(--muted);max-width:650px}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+.trust{display:flex;gap:25px;flex-wrap:wrap;margin-top:35px;color:#7f8796;font-size:12px;text-transform:uppercase;letter-spacing:1px}
+.mock{background:linear-gradient(145deg,#191e29,#0d1017);border:1px solid var(--line);border-radius:28px;padding:14px;box-shadow:0 30px 100px rgba(0,0,0,.45);transform:rotate(1.5deg)}
+.browser{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#0b0e14}
+.browserbar{height:38px;background:#171b25;display:flex;align-items:center;gap:6px;padding:0 12px}
+.dot{width:8px;height:8px;border-radius:50%;background:#707785}
+.screen{padding:25px;min-height:420px;background:linear-gradient(160deg,#172118,#0e1118)}
+.screen-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:45px}
+.screen-logo{font-weight:900}.pill{width:55px;height:10px;background:#29302e;border-radius:20px}
+.screen h3{font-size:38px;line-height:1;margin-bottom:12px}.screen p{font-size:13px;color:#9ca69d;max-width:280px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:30px}.mini{height:105px;border:1px solid #29302d;border-radius:14px;background:#131a16}
+section{padding:90px 0;border-top:1px solid var(--line)}
+.section-head{display:flex;justify-content:space-between;gap:30px;align-items:end;margin-bottom:40px}
+.kicker{color:var(--accent);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px}
+h2{font-size:clamp(34px,5vw,58px);line-height:1;letter-spacing:-2.5px;margin-top:8px}
+.section-head p{color:var(--muted);max-width:440px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.018));border:1px solid var(--line);border-radius:var(--radius);padding:28px;transition:.25s}
+.card:hover{transform:translateY(-5px);border-color:rgba(140,255,91,.3)}
+.icon{width:45px;height:45px;border-radius:14px;display:grid;place-items:center;background:#1b211b;color:var(--accent);font-size:20px;margin-bottom:20px}
+.card h3{font-size:21px;margin-bottom:8px}.card p{color:var(--muted);font-size:14px}
+.service-list{margin-top:18px;list-style:none;color:#c6cbd5;font-size:13px}.service-list li{padding:7px 0;border-top:1px solid var(--line)}
+.service-list li:before{content:"✓";color:var(--accent);margin-right:9px}
+.portfolio{grid-template-columns:repeat(2,1fr)}
+.project{min-height:300px;position:relative;overflow:hidden;background:linear-gradient(145deg,#1a202c,#10131a)}
+.project .visual{height:210px;border-radius:15px;background:linear-gradient(135deg,#26372a,#11161c);border:1px solid var(--line);margin-bottom:20px;padding:22px}
+.visual.alt{background:linear-gradient(135deg,#202a3a,#11131a)}.visual.warm{background:linear-gradient(135deg,#392d24,#131313)}.visual.purple{background:linear-gradient(135deg,#30253d,#11131a)}
+.project-title{display:flex;justify-content:space-between;gap:10px}.project small{color:var(--accent);font-weight:800}
+.process{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:22px;overflow:hidden}
+.step{background:var(--panel);padding:30px}.num{font-size:12px;color:var(--accent);font-weight:900}.step h3{margin:35px 0 8px}.step p{color:var(--muted);font-size:13px}
+.pricing{align-items:stretch}.price{position:relative}.price.featured{border-color:rgba(140,255,91,.45);box-shadow:0 0 0 1px rgba(140,255,91,.08),0 25px 70px rgba(0,0,0,.25)}
+.badge{position:absolute;right:20px;top:20px;background:var(--accent);color:#061006;border-radius:999px;padding:5px 9px;font-size:10px;font-weight:900}
+.price strong{display:block;font-size:42px;letter-spacing:-2px;margin:15px 0}.price strong span{font-size:14px;color:var(--muted);letter-spacing:0}
+.contactbox{display:grid;grid-template-columns:.9fr 1.1fr;gap:25px}
+form{display:grid;gap:13px}.input{width:100%;padding:15px 16px;border:1px solid var(--line);background:#0e1118;color:white;border-radius:13px;outline:none;font:inherit}.input:focus{border-color:rgba(140,255,91,.5)}
+textarea.input{min-height:135px;resize:vertical}.info{display:grid;gap:12px}.info .card{padding:22px}
+footer{padding:40px 0;border-top:1px solid var(--line);color:#7f8796;font-size:13px}.foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.reveal{opacity:0;transform:translateY(20px);transition:.7s}.reveal.show{opacity:1;transform:none}
+@media(max-width:850px){
+ .links{display:none}.menu{display:block}.nav-cta{display:none}
+ .hero{padding-top:75px}.hero-grid,.contactbox{grid-template-columns:1fr}.mock{max-width:600px;margin:auto}
+ .grid,.portfolio{grid-template-columns:1fr}.process{grid-template-columns:1fr 1fr}
+ .section-head{display:block}.section-head p{margin-top:15px}
+}
+@media(max-width:560px){
+ .container{width:min(calc(100% - 28px),var(--max))}.hero{padding-bottom:60px}
+ h1{letter-spacing:-2.5px}.cards{grid-template-columns:1fr 1fr}.screen{min-height:350px}
+ .process{grid-template-columns:1fr}.step{padding:24px}
+ section{padding:65px 0}
+}
+</style>
 </head>
 <body>
-<!--div id="installBanner" class="install-banner" hidden>
-  <div>
-    <strong>Install LOGANX</strong>
-    <span>Install this website as an app for quick access.</span>
-  </div>
-  <button id="installBtn" type="button">Install App</button>
-  <button id="closeInstall" type="button" aria-label="Close">×</button>
-</div-->
 
-  <header class="header">
-    <div class="container nav">
-      <a href="#" class="logo"><span>LOGAN</span>X</a>
-      <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
-        <nav id="navLinks">
-        <a href="#products">Products</a>
-        <a href="#features">Features</a>
-        <a href="#pricing">Pricing</a>
-        <a href="#contact">Contact</a>
-        <a href="#contact" class="nav-cta">Book a Demo</a>
-      <a href="blog.html">Blog</a>
+<nav>
+  <div class="container navin">
+    <a class="logo" href="#top">Loganx<span> Website Studio</span></a>
+    <div class="links">
+      <a href="#services">Services</a><a href="#work">Work</a><a href="#process">Process</a><a href="#pricing">Pricing</a><a href="#contact">Contact</a>
+    </div>
+    <a class="btn btn-primary nav-cta" href="#contact">Get a Website</a>
+    <button class="menu" aria-label="Open menu" onclick="toggleMenu()">☰</button>
+  </div>
 </nav>
+
+<main id="top">
+<section class="hero">
+ <div class="container hero-grid">
+  <div class="reveal">
+   <span class="eyebrow">Websites for businesses that want to grow</span>
+   <h1>Turn your business into a <em>brand.</em></h1>
+   <p>LOGANX creates modern, mobile-first websites for local businesses — designed to build trust, generate enquiries and make your business look professional online.</p>
+   <div class="actions"><a class="btn btn-primary" href="#contact">Start Your Website →</a><a class="btn btn-dark" href="#work">See Our Work</a></div>
+   <div class="trust"><span>⚡ Fast websites</span><span>📱 Mobile ready</span><span>💬 WhatsApp leads</span><span>🔎 SEO ready</span></div>
+  </div>
+  <div class="mock reveal">
+   <div class="browser"><div class="browserbar"><i class="dot"></i><i class="dot"></i><i class="dot"></i></div>
+    <div class="screen">
+     <div class="screen-top"><div class="screen-logo">YOUR BUSINESS</div><div class="pill"></div></div>
+     <span class="eyebrow">Trusted locally</span><h3>More customers.<br>More confidence.</h3><p>A professional online presence that works for your business every day.</p>
+     <div class="actions"><span class="btn btn-primary">WhatsApp Us</span></div>
+     <div class="cards"><div class="mini"></div><div class="mini"></div><div class="mini"></div></div>
     </div>
-  </header>
-
-  <main>
-    
-<!-- PRODUCT CAROUSEL -->
-<section class="product-carousel" aria-label="LOGANX products">
-  <div class="carousel-head">
-    <div>
-      <div class="eyebrow">LOGANX PRODUCTS</div>
-      <h2>Choose a solution for your business</h2>
-    </div>
-    <div class="carousel-actions">
-      <button class="carousel-btn prev" type="button" aria-label="Previous product">←</button>
-      <button class="carousel-btn next" type="button" aria-label="Next product">→</button>
-    </div>
+   </div>
   </div>
-
-  <div class="carousel-window">
-    <div class="carousel-track" id="productCarousel">
-      <article class="carousel-slide">
-        <div class="slide-copy">
-          <span class="slide-tag">RETAIL · POS</span>
-          <h3>BizPOS</h3>
-          <p>Fast billing, inventory and sales management for retail shops and supermarkets.</p>
-          <a class="slide-link" href="blank.html?product=BizPOS">Open product →</a>
-        </div>
-        <div class="slide-graphic pos-graphic"><span>₹</span><b>POS</b><i></i><i></i><i></i></div>
-      </article>
-
-      <article class="carousel-slide">
-        <div class="slide-copy">
-          <span class="slide-tag">DENTAL CLINIC</span>
-          <h3>DentaBook</h3>
-          <p>Appointments, patient profiles, treatment records, follow-ups and invoices.</p>
-          <a class="slide-link" href="dentabook.html">Open DentaBook →</a>
-        </div>
-        <div class="slide-graphic dental-graphic">✦<small>CARE</small></div>
-      </article>
-<!--prodect2-->
-<article class="carousel-slide">
-  <div class="slide-copy">
-    <span class="slide-tag">FOOT CARE</span>
-    <h3>Be Bodywise 20% Urea Foot Cream</h3>
-    <p>
-      50ml roll-on foot cream for dry & cracked heels with 2% Lactic Acid,
-      Olive Oil & Vitamin E. Helps repair and moisturise cracked heels.
-    </p>
-    <a
-      class="slide-link"
-      href="https://www.amazon.in/dp/B09W5Q9ZPZ?social_share=cm_sw_r_apan_dp_J3SHJXXH9HP3AHMD06GG&th=1&linkCode=ll2&tag=loganx07-21&linkId=e3e5ab4de34120d2f7d6a24e00eb9246&ref_=as_li_ss_tl"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      View on Amazon →
-    </a>
-  </div>
-
-  <div class="slide-graphic dental-graphic">
-    ✦<small>FOOT CARE</small>
-  </div>
-</article>
-<!--prodcut2-->
-<article class="carousel-slide">
-  <div class="slide-copy">
-    <span class="slide-tag">SKIN CARE</span>
-    <h3>WARTOSIN – 3ML</h3>
-    <p>
-      Herbal and Ayurvedic solution marketed for warts, massa and skin tag
-      removal.
-    </p>
-    <a
-      class="slide-link"
-      href="https://link.amazon/B0d6qlZ7K"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      View on Amazon →
-    </a>
-  </div>
-  <div class="slide-graphic dental-graphic">
-    ✦<small>SKIN CARE</small>
-  </div>
-</article><!--prodcut2-->
-      <article class="carousel-slide">
-        <div class="slide-copy">
-          <span class="slide-tag">GYM & FITNESS</span>
-          <h3>FitFlow</h3>
-          <p>Members, memberships, attendance, payments, trainers and workout programs.</p>
-          <a class="slide-link" href="fitflow.html">Open FitFlow →</a>
-        </div>
-        <div class="slide-graphic fit-graphic">⚡<small>FIT</small></div>
-      </article>
-
-      <article class="carousel-slide">
-        <div class="slide-copy">
-          <span class="slide-tag">NEW PRODUCT</span>
-          <h3>Your next product</h3>
-          <p>Use this blank product page as a starting point for your next LOGANX software solution.</p>
-          <a class="slide-link" href="blank.html">Open blank page →</a>
-        </div>
-        <div class="slide-graphic blank-graphic">+</div>
-      </article>
-    </div>
-  </div>
-
-  <div class="carousel-dots" id="carouselDots" aria-label="Choose product slide"></div>
+ </div>
 </section>
 
-<!-- HERO -->
-<section class="hero"><div class="hero-orb orb-one"></div><div class="hero-orb orb-two"></div><div class="hero-orb orb-three"></div><div class="hero-grid-lines"></div>
-      <div class="container hero-grid">
-        <div>
-          <div class="eyebrow">SMART SOFTWARE FOR GROWING BUSINESSES</div>
-          <h1>Run your business <span>smarter.</span><br>Sell more. Save time.</h1>
-          <p class="hero-copy">
-            Powerful, easy-to-use software for retail stores, supermarkets, gyms and dental clinics.
-            Choose the solution built for your business.
-          </p>
-          <div class="hero-actions">
-            <a class="btn primary" href="#products">Explore Products</a>
-            <a class="btn secondary" href="#contact">Request a Demo</a>
-          </div>
-          <div class="trust">
-            <div><strong>3</strong><small>Business Solutions</small></div>
-            <div><strong>24/7</strong><small>Cloud Access</small></div>
-            <div><strong>Easy</strong><small>Setup & Support</small></div>
-          </div>
-        </div>
-        <div class="dashboard-card floating-card"><div class="dashboard-glow"></div><div class="spark spark-a"></div><div class="spark spark-b"></div>
-          <div class="dash-top"><span>Business Overview</span><span class="status">● Live</span></div>
-          <div class="dash-number">₹ 2,84,650</div>
-          <div class="dash-label">Total sales this month</div>
-          <div class="bars">
-            <i style="height:42%"></i><i style="height:58%"></i><i style="height:48%"></i>
-            <i style="height:72%"></i><i style="height:64%"></i><i style="height:82%"></i><i style="height:92%"></i>
-          </div>
-          <div class="dash-bottom">
-            <div><b>1,248</b><small>Transactions</small></div>
-            <div><b>326</b><small>Customers</small></div>
-            <div><b>98.4%</b><small>Uptime</small></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="products section" id="products">
-      <div class="container">
-        <div class="section-heading">
-          <div class="eyebrow">OUR PRODUCTS</div>
-          <h2>One software partner.<br><span>Three powerful solutions.</span></h2>
-          <p>Everything you need to manage daily operations, customers, payments and growth.</p>
-        </div>
-
-        <div class="product-grid">
-          <article class="product-card reveal">
-            <div class="product-icon retail">▣</div>
-            <span class="tag">RETAIL & SUPERMARKET</span>
-            <h3>BizPOS</h3>
-            <p>Complete point-of-sale software for retail shops, supermarkets and multi-counter stores.</p>
-            <ul>
-              <li>Billing & barcode scanning</li>
-              <li>Inventory & stock management</li>
-              <li>Purchase & supplier management</li>
-              <li>Sales reports & GST-ready invoices</li>
-              <li>Multiple users and counters</li>
-            </ul>
-            <a href="#contact" class="product-link" data-product="BizPOS">Get BizPOS →</a>
-          </article>
-
-          <article class="product-card featured reveal">
-            <div class="popular">MOST POPULAR</div>
-            <div class="product-icon gym">◆</div>
-            <span class="tag">GYM & FITNESS</span>
-            <h3>FitFlow</h3>
-            <p>Membership and gym management software that keeps trainers, members and payments organized.</p>
-            <ul>
-              <li>Member registration & profiles</li>
-              <li>Membership plans & renewals</li>
-              <li>Attendance tracking</li>
-              <li>Payment reminders & receipts</li>
-              <li>Trainer and workout management</li>
-            </ul>
-            <a href="fitflow.html" class="product-link" data-product="FitFlow">Get FitFlow →</a>
-          </article>
-
-          <article class="product-card reveal">
-            <div class="product-icon dental">✚</div>
-            <span class="tag">DENTAL CLINIC</span>
-            <h3>DentaBook</h3>
-            <p>Simple clinic software for appointments, patients, treatment records and follow-ups.</p>
-            <ul>
-              <li>Online appointment booking</li>
-              <li>Patient profiles & history</li>
-              <li>Doctor calendar management</li>
-              <li>SMS/WhatsApp reminder-ready</li>
-              <li>Invoices and payment tracking</li>
-            </ul>
-            <a href="dentabook.html" class="product-link" data-product="DentaBook">Get DentaBook →</a>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="feature-section section" id="features">
-      <div class="container feature-grid">
-        <div>
-          <div class="eyebrow">WHY BIZFLOW</div>
-          <h2>Built for real businesses,<br><span>not complicated teams.</span></h2>
-          <p>Launch quickly, train your staff easily and keep your business information in one place.</p>
-        </div>
-        <div class="feature-list">
-          <div class="feature reveal"><b>01</b><div><h3>Simple to use</h3><p>Clean screens and workflows your staff can understand quickly.</p></div></div>
-          <div class="feature reveal"><b>02</b><div><h3>Cloud-ready</h3><p>Access dashboards and business information from anywhere.</p></div></div>
-          <div class="feature reveal"><b>03</b><div><h3>Secure data</h3><p>User permissions, backups and reliable business data management.</p></div></div>
-          <div class="feature reveal"><b>04</b><div><h3>Local support</h3><p>Get onboarding and product support when your team needs it.</p></div></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="pricing section" id="pricing">
-      <div class="container">
-        <div class="section-heading">
-          <div class="eyebrow">FLEXIBLE PRICING</div>
-          <h2>Start small. <span>Grow confidently.</span></h2>
-          <p>Use these as starting packages and customize pricing for your sales process.</p>
-        </div>
-        <div class="price-grid">
-          <div class="price-card reveal"><h3>BizPOS</h3><div class="price">₹399<span>/month</span></div><p>For small businesses getting started.</p><a href="#contact" class="btn secondary">Choose Starter</a></div>
-          <div class="price-card highlighted reveal"><h3>FitFlow</h3><div class="price">₹1,999<span>/YEAR</span></div><p>For growing teams needing more control.</p><a href="#contact" class="btn primary">Choose Business</a></div>
-          <div class="price-card reveal"><h3>DentaBook</h3><div class="price">1200<span>/YEAR</span></div><p>Multi-location and advanced requirements.</p><a href="#contact" class="btn secondary">Talk to Sales</a></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="cta section" id="contact">
-      <div class="container cta-box">
-        <div>
-          <div class="eyebrow">READY TO GET STARTED?</div>
-          <h2>Let's find the right product<br>for your business.</h2>
-          <p>Tell us what you need and our team will arrange a product demo.</p>
-        </div>
-        <form id="demoForm" action="https://formsubmit.co/vikneshb@zoho.com" method="POST">
-          <input id="name" name="name" type="text" placeholder="Your name" required>
-          <input id="phone" name="phone" type="tel" placeholder="Phone / WhatsApp" required>
-          <select id="product" name="product" required>
-            <option value="">Select product</option>
-            <option>BizPOS — Retail / Supermarket</option>
-            <option>FitFlow — Gym</option>
-            <option>DentaBook — Dental Clinic</option>
-          </select>
-          <textarea id="message" name="message" rows="3" placeholder="Tell us about your business"></textarea>
-          <input type="hidden" name="_subject" value="LOGANX Website - New Demo Request">
-          <input type="hidden" name="_captcha" value="false">
-          <input type="hidden" name="_template" value="table">
-          <button class="btn primary" type="submit">Request Demo</button>
-          <p class="form-note" id="formMessage"></p>
-        </form>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <div class="container footer-inner">
-      <div><a href="#" class="logo"><span>LOGAN</span>X</a><p>Business software made simple.</p></div>
-      <div class="footer-links"><a href="#products">Products</a><a href="#features">Features</a><a href="#pricing">Pricing</a><a href="#contact">Contact</a></div>
-      <div><a href="mailto:vikneshb@zoho.com">vikneshb@zoho.com</a> · © 2026 LOGANX</div>
-    </div>
-  </footer>
-
-  <script src="script.js"></script>
-
-<!-- MAIL SERVICE / ENQUIRY -->
-<!--section class="mail-service" id="contact">
-  <div class="mail-card">
-    <div>
-      <span class="eyebrow">MAIL SERVICE</span>
-      <h2>Request a LOGANX demo</h2>
-      <p>Send your enquiry directly to <strong>vikneshb@zoho.com</strong>.</p>
-    </div>
-    <form id="mailForm" class="mail-form">
-      <input name="name" placeholder="Your name" required>
-      <input name="phone" placeholder="Phone / WhatsApp" required>
-      <select name="product" required>
-        <option value="">Select product</option>
-        <option>POS</option><option>DentaBook</option><option>FitFlow</option><option>Other</option>
-      </select>
-      <textarea name="message" placeholder="Tell us what you need" rows="3" required></textarea>
-      <button type="submit">Send Enquiry →</button>
-    </form>
+<section id="services">
+ <div class="container">
+  <div class="section-head reveal"><div><div class="kicker">What we build</div><h2>Everything your business needs online.</h2></div><p>From a simple local-business website to a complete lead-generation presence, LOGANX keeps the experience clean, fast and conversion-focused.</p></div>
+  <div class="grid">
+   <article class="card reveal"><div class="icon">◈</div><h3>Business Websites</h3><p>Professional websites for shops, offices and service businesses.</p><ul class="service-list"><li>5–7 responsive pages</li><li>About, services & contact</li><li>Google Maps integration</li><li>Basic SEO setup</li></ul></article>
+   <article class="card reveal"><div class="icon">◉</div><h3>WhatsApp Lead Websites</h3><p>Make it easy for visitors to enquire, order or book directly.</p><ul class="service-list"><li>Product enquiry buttons</li><li>Pre-filled WhatsApp messages</li><li>Click-to-call actions</li><li>Lead-focused CTAs</li></ul></article>
+   <article class="card reveal"><div class="icon">▦</div><h3>Business Catalogues</h3><p>Showcase products and services in a simple, mobile-friendly catalogue.</p><ul class="service-list"><li>Product cards & pricing</li><li>Categories & offers</li><li>Photo galleries</li><li>Easy enquiry flow</li></ul></article>
+   <article class="card reveal"><div class="icon">✦</div><h3>Landing Pages</h3><p>Focused pages for campaigns, new services, offers and promotions.</p><ul class="service-list"><li>Conversion-focused layout</li><li>Strong call-to-action</li><li>Contact/WhatsApp forms</li><li>Fast loading</li></ul></article>
+   <article class="card reveal"><div class="icon">⌘</div><h3>Custom Web Apps</h3><p>Business tools built around your actual workflow.</p><ul class="service-list"><li>POS & billing systems</li><li>Booking systems</li><li>Admin dashboards</li><li>PHP/MySQL solutions</li></ul></article>
+   <article class="card reveal"><div class="icon">↗</div><h3>Care & Growth</h3><p>Keep your website updated and useful after launch.</p><ul class="service-list"><li>Content updates</li><li>Product/offer updates</li><li>Maintenance support</li><li>Future feature upgrades</li></ul></article>
   </div>
-</section-->
+ </div>
+</section>
 
-<script src="mail.js"></script>
+<section id="work">
+ <div class="container">
+  <div class="section-head reveal"><div><div class="kicker">Selected concepts</div><h2>Built for real businesses.</h2></div><p>Use these demo concepts to show potential customers what their own website could look like.</p></div>
+  <div class="grid portfolio">
+   <article class="card project reveal"><div class="visual"><small>RETAIL / CATALOGUE</small><h3 style="font-size:34px;margin-top:35px">FreshMart</h3><p>Products + offers + WhatsApp ordering</p></div><div class="project-title"><h3>Retail Shop</h3><small>VIEW DEMO →</small></div></article>
+   <article class="card project reveal"><div class="visual alt"><small>HEALTHCARE</small><h3 style="font-size:34px;margin-top:35px">DentaBook</h3><p>Clinic presence + appointment enquiries</p></div><div class="project-title"><h3>Dental Clinic</h3><small>VIEW DEMO →</small></div></article>
+   <article class="card project reveal"><div class="visual warm"><small>FITNESS</small><h3 style="font-size:34px;margin-top:35px">FitFlow</h3><p>Gym website + membership leads</p></div><div class="project-title"><h3>Gym / Fitness</h3><small>VIEW DEMO →</small></div></article>
+   <article class="card project reveal"><div class="visual purple"><small>FOOD / LOCAL</small><h3 style="font-size:34px;margin-top:35px">FoodHouse</h3><p>Menu + location + WhatsApp orders</p></div><div class="project-title"><h3>Restaurant</h3><small>VIEW DEMO →</small></div></article>
+  </div>
+ </div>
+</section>
+
+<section id="process">
+ <div class="container">
+  <div class="section-head reveal"><div><div class="kicker">Simple process</div><h2>From idea to live website.</h2></div><p>No complicated agency process. We keep communication direct and the launch practical.</p></div>
+  <div class="process">
+   <div class="step reveal"><div class="num">01 / DISCOVER</div><h3>Tell us your business</h3><p>Share your business details, services, products, photos and goals.</p></div>
+   <div class="step reveal"><div class="num">02 / DESIGN</div><h3>We build your site</h3><p>We create the pages, mobile layout, CTAs, WhatsApp flow and content structure.</p></div>
+   <div class="step reveal"><div class="num">03 / REVIEW</div><h3>You approve</h3><p>Review the website and request practical changes before launch.</p></div>
+   <div class="step reveal"><div class="num">04 / LAUNCH</div><h3>Go live</h3><p>Connect your domain and hosting, then start sharing your website with customers.</p></div>
+  </div>
+ </div>
+</section>
+
+<section id="pricing">
+ <div class="container">
+  <div class="section-head reveal"><div><div class="kicker">Simple pricing</div><h2>Pick the level you need.</h2></div><p>Starting prices for standard projects. Final pricing depends on pages, content, integrations and custom features.</p></div>
+  <div class="grid pricing">
+   <article class="card price reveal"><h3>Starter</h3><p>For businesses that need a clean online presence.</p><strong>₹2,999 <span>/ project</span></strong><ul class="service-list"><li>Up to 5 pages</li><li>Mobile responsive</li><li>WhatsApp button</li><li>Contact details</li><li>Basic SEO</li></ul><a class="btn btn-dark" style="margin-top:20px;width:100%" href="#contact">Choose Starter</a></article>
+   <article class="card price featured reveal"><span class="badge">POPULAR</span><h3>Business</h3><p>For businesses that want enquiries and a stronger presence.</p><strong>₹5,999 <span>/ project</span></strong><ul class="service-list"><li>5–7 pages</li><li>Products/services section</li><li>WhatsApp enquiry flow</li><li>Gallery + Google Maps</li><li>SEO-ready structure</li></ul><a class="btn btn-primary" style="margin-top:20px;width:100%" href="#contact">Choose Business</a></article>
+   <article class="card price reveal"><h3>Premium</h3><p>For custom websites and businesses ready to scale.</p><strong>₹9,999+ <span>/ project</span></strong><ul class="service-list"><li>Custom UI/UX</li><li>Advanced sections</li><li>Forms & integrations</li><li>Custom web features</li><li>Priority support</li></ul><a class="btn btn-dark" style="margin-top:20px;width:100%" href="#contact">Discuss Premium</a></article>
+  </div>
+  <p style="color:#727988;font-size:12px;margin-top:18px">Maintenance plans can be added separately from ₹499/month depending on requirements.</p>
+ </div>
+</section>
+
+<section id="contact">
+ <div class="container">
+  <div class="section-head reveal"><div><div class="kicker">Start a project</div><h2>Ready to put your business online?</h2></div><p>Send your details. We can discuss the right website package for your business.</p></div>
+  <div class="contactbox">
+   <div class="info">
+    <div class="card reveal"><div class="kicker">WhatsApp</div><h3 style="margin-top:8px">Fastest way to reach us</h3><p style="color:var(--muted);margin:8px 0 18px">Tell us your business type and what you want on the website.</p><a class="btn btn-primary" href="https://wa.me/919487848939?text=Hi%20LOGANX%2C%20I%20want%20a%20business%20website." target="_blank">Chat on WhatsApp →</a></div>
+    <div class="card reveal"><div class="kicker">Email</div><h3 style="margin-top:8px">vikneshb@zoho.com</h3><p style="color:var(--muted)">For project enquiries, requirements and business collaborations.</p></div>
+    <div class="card reveal"><div class="kicker">Service area</div><h3 style="margin-top:8px">India • Local Businesses</h3><p style="color:var(--muted)">Remote website delivery for businesses across India.</p></div>
+   </div>
+   <form class="card reveal" onsubmit="sendWhatsApp(event)">
+    <h3>Tell us about your business</h3>
+    <p style="color:var(--muted);font-size:13px;margin-bottom:8px">This form opens WhatsApp with your enquiry.</p>
+    <input class="input" id="name" placeholder="Your name" required>
+    <input class="input" id="business" placeholder="Business name / type" required>
+    <input class="input" id="phone" placeholder="Phone / WhatsApp number">
+    <select class="input" id="package"><option>Not sure yet</option><option>Starter — ₹2,999</option><option>Business — ₹5,999</option><option>Premium — ₹9,999+</option><option>Custom Web App</option></select>
+    <textarea class="input" id="message" placeholder="What do you need on your website?"></textarea>
+    <button class="btn btn-primary" type="submit">Send Website Enquiry →</button>
+   </form>
+  </div>
+ </div>
+</section>
+</main>
+
+<footer>
+ <div class="container foot"><div>© <span id="year"></span> LOGANX. Websites that help businesses grow.</div><div><a href="#services">Services</a> · <a href="#work">Work</a> · <a href="#pricing">Pricing</a> · <a href="#contact">Contact</a></div></div>
+</footer>
+
+<script>
+function toggleMenu(){
+ const l=document.querySelector('.links');
+ if(getComputedStyle(l).display==='none'){l.style.display='flex';l.style.position='absolute';l.style.top='76px';l.style.left='0';l.style.right='0';l.style.padding='20px';l.style.background='#0b0d12';l.style.flexDirection='column';}
+ else l.removeAttribute('style');
+}
+function sendWhatsApp(e){
+ e.preventDefault();
+ const name=document.getElementById('name').value.trim();
+ const business=document.getElementById('business').value.trim();
+ const phone=document.getElementById('phone').value.trim();
+ const pkg=document.getElementById('package').value;
+ const msg=document.getElementById('message').value.trim();
+ const text=`Hi LOGANX, I want a website.%0A%0AName: ${encodeURIComponent(name)}%0ABusiness: ${encodeURIComponent(business)}%0APhone: ${encodeURIComponent(phone)}%0APackage: ${encodeURIComponent(pkg)}%0ARequirements: ${encodeURIComponent(msg)}`;
+ window.open('https://wa.me/919487848939?text='+text,'_blank');
+}
+document.getElementById('year').textContent=new Date().getFullYear();
+const obs=new IntersectionObserver(entries=>entries.forEach(x=>{if(x.isIntersecting)x.target.classList.add('show')}),{threshold:.08});
+document.querySelectorAll('.reveal').forEach(x=>obs.observe(x));
+</script>
 </body>
 </html>
