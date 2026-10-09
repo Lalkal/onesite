@@ -1,13 +1,7 @@
 {
   "version": 2,
   "functions": {
-    "api/*.php": {
-      "runtime": "vercel-php@0.9.0"
-    },
-    "*.php": {
-      "runtime": "vercel-php@0.9.0"
-    },
-    "admin/*.php": {
+    "api/**/*.php": {
       "runtime": "vercel-php@0.9.0"
     }
   },
@@ -38,19 +32,19 @@
     },
     {
       "src": "/verify(\\.php)?",
-      "dest": "/verify.php"
+      "dest": "/api/verify.php"
     },
     {
       "src": "/download(\\.php)?",
-      "dest": "/download.php"
+      "dest": "/api/download.php"
     },
     {
       "src": "/admin",
-      "dest": "/admin/index.php"
+      "dest": "/api/admin/index.php"
     },
     {
       "src": "/admin/(.*)",
-      "dest": "/admin/$1"
+      "dest": "/api/admin/$1"
     },
     {
       "handle": "filesystem"

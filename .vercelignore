@@ -6,3 +6,6 @@ tests/
 storage/logs/*.log
 *.bat
 vendor/
+verify.php
+download.php
+admin/
