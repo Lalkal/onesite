@@ -1,10 +1,11 @@
 /**
  * LOGANX Automated Email Verification & Digital Download Delivery System
- * Client-Side Controller
+ * Client-Side Controller & Real-Time CMS Website Synchronizer
  */
 (() => {
   let modalOverlay = null;
   let csrfToken = '';
+  let activeResources = [];
 
   // Fetch CSRF token
   async function fetchCsrfToken() {
@@ -17,6 +18,107 @@
     } catch (e) {
       console.warn('Could not pre-fetch CSRF token:', e);
     }
+  }
+
+  // Fetch Active Resources from CMS Database & Dynamically Update Site
+  async function syncActiveResources() {
+    try {
+      const res = await fetch('api/resources.php');
+      if (!res.ok) return;
+
+      const data = await res.json();
+      if (!data.success || !Array.isArray(data.resources) || data.resources.length === 0) {
+        return;
+      }
+
+      activeResources = data.resources;
+
+      // Update Hero Download Button with Primary Resource
+      const heroBtn = document.querySelector('.hero .actions [data-download-trigger], .hero [data-download-trigger]');
+      const primaryRes = activeResources.find(r => r.is_primary) || activeResources[0];
+      if (heroBtn && primaryRes) {
+        heroBtn.setAttribute('data-resource-slug', primaryRes.slug);
+        heroBtn.setAttribute('data-resource-title', primaryRes.title);
+        heroBtn.setAttribute('data-resource-id', primaryRes.id);
+      }
+
+      // Update #downloads section dynamically if present
+      renderDownloadsSection(activeResources);
+
+    } catch (e) {
+      console.warn('Could not sync dynamic download resources:', e);
+    }
+  }
+
+  function renderDownloadsSection(resources) {
+    const downloadsSection = document.getElementById('downloads');
+    if (!downloadsSection) return;
+
+    const container = downloadsSection.querySelector('.container');
+    if (!container) return;
+
+    // Check if dynamic grid container exists, or create it
+    let gridWrap = downloadsSection.querySelector('#lxDynamicGrid');
+    if (!gridWrap) {
+      gridWrap = document.createElement('div');
+      gridWrap.id = 'lxDynamicGrid';
+      gridWrap.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px;margin-top:28px;';
+      container.appendChild(gridWrap);
+    }
+
+    // Hide old hardcoded single card if dynamic grid is populated
+    const oldCard = downloadsSection.querySelector('.card:not(.dynamic-card)');
+    if (oldCard && resources.length > 0) {
+      oldCard.style.display = 'none';
+    }
+
+    gridWrap.innerHTML = resources.map(res => {
+      const isPrimary = !!res.is_primary;
+      const sizeStr = res.file_size_formatted || '';
+      const versionStr = res.version ? `v${res.version}` : '';
+
+      return `
+        <div class="card dynamic-card reveal show" style="background:linear-gradient(145deg,#131825,#0c0f16);border:1px solid ${isPrimary ? 'rgba(140,255,91,.25)' : 'rgba(255,255,255,.08)'};padding:30px;border-radius:20px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 10px 35px rgba(0,0,0,.3);">
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+              <span class="eyebrow" style="margin:0;font-size:11px;padding:4px 10px;background:rgba(255,255,255,.05);border-radius:999px;border:1px solid rgba(255,255,255,.1);">
+                ${versionStr || 'Software'}
+              </span>
+              ${sizeStr ? `<span style="font-size:12px;color:var(--muted,#9da5b5);font-family:monospace;">${sizeStr}</span>` : ''}
+            </div>
+            
+            <h3 style="font-size:22px;letter-spacing:-0.5px;margin-bottom:10px;color:#fff;line-height:1.25;">
+              ${escapeHtml(res.title)}
+            </h3>
+            
+            <p style="color:var(--muted,#9da5b5);font-size:14px;line-height:1.6;margin-bottom:20px;">
+              ${escapeHtml(res.description || 'Verified secure digital software package.')}
+            </p>
+          </div>
+
+          <div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--accent,#8cff5b);margin-bottom:14px;font-weight:700;">
+              <span>🔒 Single-Use Token Delivery</span> &bull; <span>Verified Email</span>
+            </div>
+
+            <button type="button" class="btn ${isPrimary ? 'btn-primary' : 'btn-dark'}" 
+                    data-download-trigger 
+                    data-resource-slug="${escapeHtml(res.slug)}" 
+                    data-resource-title="${escapeHtml(res.title)}"
+                    data-resource-id="${res.id}"
+                    style="width:100%;justify-content:center;padding:12px 18px;font-size:13px;">
+              ⚡ Download via Email &rarr;
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, m => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[m]);
   }
 
   // Inject Modal Markup
@@ -238,15 +340,18 @@
     document.addEventListener('DOMContentLoaded', () => {
       attachTriggers();
       fetchCsrfToken();
+      syncActiveResources();
     });
   } else {
     attachTriggers();
     fetchCsrfToken();
+    syncActiveResources();
   }
 
   // Expose global controller
   window.LoganXDownload = {
     open: openModal,
-    close: closeModal
+    close: closeModal,
+    sync: syncActiveResources
   };
 })();

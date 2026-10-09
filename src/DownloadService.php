@@ -10,7 +10,7 @@ class DownloadService
 {
     /**
      * Process an authorized download request and stream file content
-     * If validation fails, returns array with status and error message
+     * Supports both local storage and Supabase Storage bucket (supabase-coral-bucket)
      */
     public static function serveDownload(string $rawToken, ?string $ip = null, ?string $userAgent = null, bool $stream = true): array
     {
@@ -32,31 +32,49 @@ class DownloadService
         }
 
         $record = $validation['record'];
-        $storageDir = Config::storagePath();
         $storedRelOrAbs = $record['stored_file_path'];
+        $bucket = SupabaseStorage::getBucket();
 
-        // Resolve absolute file path
-        if (str_starts_with($storedRelOrAbs, '/') || (strlen($storedRelOrAbs) > 2 && $storedRelOrAbs[1] === ':')) {
-            $targetPath = $storedRelOrAbs;
-        } else {
-            $targetPath = $storageDir . '/' . ltrim($storedRelOrAbs, '\\/');
-        }
+        $isSupabase = str_starts_with($storedRelOrAbs, 'supabase://') ||
+                      str_starts_with($storedRelOrAbs, 'supabase:') ||
+                      str_starts_with($storedRelOrAbs, $bucket . '/') ||
+                      (SupabaseStorage::isConfigured() && !file_exists(Config::storagePath() . '/' . ltrim($storedRelOrAbs, '\\/')));
 
-        // Verify path safety and prevent path traversal
-        if (!Security::isPathSafe($storageDir, $targetPath) || !file_exists($targetPath)) {
-            self::logAttempt(
-                (int)$record['resource_id'],
-                (int)$record['verified_download_request_id'],
-                (int)$record['id'],
-                $ip,
-                $userAgent,
-                'failed_missing_file'
-            );
-            return [
-                'status'  => 'missing_file',
-                'record'  => $record,
-                'message' => 'The requested file could not be located on the server. Please contact support.'
-            ];
+        $targetPath = null;
+        $fileSize = (int)($record['file_size_bytes'] ?? 0);
+
+        if (!$isSupabase) {
+            $storageDir = Config::storagePath();
+            // Resolve absolute file path
+            if (str_starts_with($storedRelOrAbs, '/') || (strlen($storedRelOrAbs) > 2 && $storedRelOrAbs[1] === ':')) {
+                $targetPath = $storedRelOrAbs;
+            } else {
+                $targetPath = $storageDir . '/' . ltrim($storedRelOrAbs, '\\/');
+            }
+
+            // Verify path safety and prevent path traversal
+            if (!Security::isPathSafe($storageDir, $targetPath) || !file_exists($targetPath)) {
+                // If local file is not found but Supabase is configured, check if it exists in Supabase
+                if (SupabaseStorage::isConfigured()) {
+                    $isSupabase = true;
+                } else {
+                    self::logAttempt(
+                        (int)$record['resource_id'],
+                        (int)$record['verified_download_request_id'],
+                        (int)$record['id'],
+                        $ip,
+                        $userAgent,
+                        'failed_missing_file'
+                    );
+                    return [
+                        'status'  => 'missing_file',
+                        'record'  => $record,
+                        'message' => 'The requested file could not be located on the server. Please contact support.'
+                    ];
+                }
+            } else {
+                $fileSize = filesize($targetPath) ?: $fileSize;
+            }
         }
 
         // Concurrency-safe atomic increment of download count
@@ -65,7 +83,7 @@ class DownloadService
             $stmt = $pdo->prepare(
                 "UPDATE download_tokens 
                  SET successful_download_count = successful_download_count + 1, 
-                     last_downloaded_at = NOW() 
+                     last_downloaded_at = CURRENT_TIMESTAMP 
                  WHERE id = :id 
                    AND successful_download_count < max_downloads"
             );
@@ -89,8 +107,7 @@ class DownloadService
             ];
         }
 
-        $fileSize = filesize($targetPath) ?: 0;
-        $originalFilename = Security::sanitizeFilename($record['original_filename'] ?: basename($targetPath));
+        $originalFilename = Security::sanitizeFilename($record['original_filename'] ?: ($targetPath ? basename($targetPath) : 'download'));
         $mimeType = $record['mime_type'] ?: 'application/octet-stream';
 
         // Log successful download
@@ -105,12 +122,29 @@ class DownloadService
         );
 
         if ($stream) {
+            if ($isSupabase) {
+                // Stream from Supabase Storage bucket
+                $streamed = SupabaseStorage::streamFile($storedRelOrAbs, $originalFilename, $mimeType, $fileSize);
+                if (!$streamed) {
+                    // Fallback to secure temporary signed download URL redirect
+                    $signedUrl = SupabaseStorage::createSignedUrl($storedRelOrAbs, 300);
+                    if ($signedUrl) {
+                        header("Location: {$signedUrl}");
+                        exit;
+                    }
+                    http_response_code(502);
+                    echo "Unable to stream file from cloud storage. Please try again shortly.";
+                    exit;
+                }
+                exit;
+            }
+
             self::streamFile($targetPath, $originalFilename, $mimeType, $fileSize);
         }
 
         return [
             'status'            => 'success',
-            'file_path'         => $targetPath,
+            'file_path'         => $isSupabase ? "supabase://{$bucket}/" . SupabaseStorage::extractCleanPath($storedRelOrAbs) : $targetPath,
             'original_filename' => $originalFilename,
             'mime_type'         => $mimeType,
             'file_size'         => $fileSize,
@@ -119,7 +153,7 @@ class DownloadService
     }
 
     /**
-     * Stream file to client with security headers and chunking
+     * Stream local file to client with security headers and chunking
      */
     public static function streamFile(string $filePath, string $filename, string $mimeType, int $fileSize): void
     {
@@ -178,7 +212,7 @@ class DownloadService
             $stmt = $pdo->prepare(
                 "INSERT INTO download_logs 
                  (resource_id, verified_download_request_id, download_token_id, ip_address, user_agent, download_status, bytes_sent, downloaded_at)
-                 VALUES (:res_id, :req_id, :tok_id, :ip, :ua, :status, :bytes, NOW())"
+                 VALUES (:res_id, :req_id, :tok_id, :ip, :ua, :status, :bytes, CURRENT_TIMESTAMP)"
             );
             $stmt->execute([
                 ':res_id'  => $resourceId,

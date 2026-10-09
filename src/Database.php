@@ -19,12 +19,36 @@ class Database
 
         Config::load();
 
-        $host = Config::get('DB_HOST', '127.0.0.1');
-        $port = Config::get('DB_PORT', '3306');
-        $dbname = Config::get('DB_DATABASE', 'loganx_downloads');
-        $user = Config::get('DB_USERNAME', 'root');
-        $pass = Config::get('DB_PASSWORD', '');
+        $driver = strtolower((string)Config::get('DB_CONNECTION', ''));
+        $host   = (string)Config::get('DB_HOST', '127.0.0.1');
+        $port   = (string)Config::get('DB_PORT', '3306');
+        $dbname = (string)Config::get('DB_DATABASE', 'loganx_downloads');
+        $user   = (string)Config::get('DB_USERNAME', 'root');
+        $pass   = (string)Config::get('DB_PASSWORD', '');
 
+        // Auto-detect Supabase PostgreSQL
+        $isPostgres = ($driver === 'pgsql' || $driver === 'postgres' || $driver === 'supabase' ||
+            str_contains($host, 'supabase.co') || str_contains($host, 'supabase.com') ||
+            (int)$port === 5432 || (int)$port === 6543);
+
+        if ($isPostgres) {
+            $dsn = "pgsql:host={$host};port={$port};dbname={$dbname};sslmode=require";
+            $options = [
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES   => false,
+            ];
+
+            try {
+                self::$pdo = new PDO($dsn, $user, $pass, $options);
+                self::$pdo->exec("SET TIME ZONE 'UTC'");
+                return self::$pdo;
+            } catch (PDOException $e) {
+                throw new RuntimeException("Supabase PostgreSQL connection failed: " . $e->getMessage(), (int)$e->getCode());
+            }
+        }
+
+        // MySQL / MariaDB (Local or Cloud MySQL like TiDB)
         $dsn = "mysql:host={$host};port={$port};dbname={$dbname};charset=utf8mb4";
         $options = [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
@@ -42,7 +66,6 @@ class Database
             self::$pdo = new PDO($dsn, $user, $pass, $options);
             return self::$pdo;
         } catch (PDOException $e) {
-            // Mask password and internal details from exception message in logs
             throw new RuntimeException("Database connection failed: " . $e->getMessage(), (int)$e->getCode());
         }
     }
