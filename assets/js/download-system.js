@@ -10,7 +10,10 @@
   // Fetch CSRF token
   async function fetchCsrfToken() {
     try {
-      const res = await fetch('api/csrf-token.php');
+      const res = await fetch('api/csrf-token.php', {
+        credentials: 'same-origin',
+        headers: { 'Accept': 'application/json' }
+      });
       if (res.ok) {
         const data = await res.json();
         csrfToken = data.csrf_token || '';
@@ -254,8 +257,8 @@
     box.textContent = '';
   }
 
-  async function handleFormSubmit(e) {
-    e.preventDefault();
+  async function handleFormSubmit(e, isRetry = false) {
+    if (e && e.preventDefault) e.preventDefault();
     hideError();
 
     const email = document.getElementById('lxEmailInput').value.trim();
@@ -276,7 +279,7 @@
     btnText.textContent = 'Sending Download Link...';
 
     try {
-      if (!csrfToken) {
+      if (!csrfToken || isRetry) {
         await fetchCsrfToken();
       }
 
@@ -289,6 +292,7 @@
 
       const response = await fetch('api/request-download.php', {
         method: 'POST',
+        credentials: 'same-origin',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
@@ -305,6 +309,10 @@
         if (data.message) {
           document.getElementById('lxSuccessText').textContent = data.message;
         }
+      } else if (response.status === 403 && data.message && data.message.includes('expired') && !isRetry) {
+        // Token was stale: seamlessly fetch a fresh signed token and retry once
+        await fetchCsrfToken();
+        return handleFormSubmit(null, true);
       } else {
         showError(data.message || 'Unable to process your download request. Please try again.');
       }

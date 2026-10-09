@@ -57,22 +57,61 @@ class Security
         return '127.0.0.1';
     }
 
+    private static function getAppSecret(): string
+    {
+        $secret = (string)Config::get('APP_SECRET', '');
+        if ($secret === '') {
+            $secret = (string)Config::get('ADMIN_PASSWORD_HASH', '');
+        }
+        if ($secret === '') {
+            $secret = hash('sha256', __DIR__ . '-loganx-secure-token-salt');
+        }
+        return $secret;
+    }
+
     public static function generateCsrfToken(): string
     {
         self::startSession();
-        if (empty($_SESSION['csrf_token'])) {
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-        }
-        return $_SESSION['csrf_token'];
+        $random = bin2hex(random_bytes(16));
+        $timestamp = time();
+        $data = "{$random}.{$timestamp}";
+        $secret = self::getAppSecret();
+        $hmac = hash_hmac('sha256', $data, $secret);
+        $signedToken = "{$data}.{$hmac}";
+
+        $_SESSION['csrf_token'] = $signedToken;
+        return $signedToken;
     }
 
     public static function validateCsrfToken(?string $token): bool
     {
-        self::startSession();
-        if (empty($_SESSION['csrf_token']) || empty($token)) {
+        if (empty($token)) {
             return false;
         }
-        return hash_equals($_SESSION['csrf_token'], $token);
+
+        $parts = explode('.', $token);
+        if (count($parts) === 3) {
+            [$random, $timestamp, $hmac] = $parts;
+            $time = (int)$timestamp;
+            // Valid for up to 6 hours (21600s), prevent future skew (> 300s)
+            if (time() - $time > 21600 || $time > time() + 300) {
+                return false;
+            }
+            $data = "{$random}.{$timestamp}";
+            $secret = self::getAppSecret();
+            $expectedHmac = hash_hmac('sha256', $data, $secret);
+            if (hash_equals($expectedHmac, $hmac)) {
+                return true;
+            }
+        }
+
+        // Fallback to session check for backwards compatibility
+        self::startSession();
+        if (!empty($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token)) {
+            return true;
+        }
+
+        return false;
     }
 
     public static function e(mixed $value): string
