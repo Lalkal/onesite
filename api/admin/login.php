@@ -34,20 +34,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif ($username === '' || $password === '') {
             $error = 'Please enter both username and password.';
         } else {
-            $pdo = Database::getConnection();
-            $stmt = $pdo->prepare("SELECT * FROM admin_users WHERE username = :u LIMIT 1");
-            $stmt->execute([':u' => $username]);
-            $user = $stmt->fetch();
+            $loginSuccess = false;
+            $userObj = null;
 
-            if ($user && password_verify($password, $user['password_hash'])) {
+            try {
+                $pdo = Database::getConnection();
+                $stmt = $pdo->prepare("SELECT * FROM admin_users WHERE username = :u LIMIT 1");
+                $stmt->execute([':u' => $username]);
+                $user = $stmt->fetch();
+
+                if ($user && password_verify($password, $user['password_hash'])) {
+                    $loginSuccess = true;
+                    $userObj = [
+                        'id'       => (int)$user['id'],
+                        'username' => (string)$user['username'],
+                        'role'     => (string)($user['role'] ?? 'admin')
+                    ];
+                    try {
+                        $pdo->prepare("UPDATE admin_users SET last_login_at = NOW() WHERE id = :id")->execute([':id' => $user['id']]);
+                    } catch (\Throwable $ignore) {}
+                }
+            } catch (\Throwable $dbEx) {
+                Security::log('warning', "Database connection unavailable for admin login: " . $dbEx->getMessage());
+            }
+
+            // Fallback: If DB is down or empty, verify against configured ADMIN_USERNAME & ADMIN_PASSWORD_HASH in environment
+            if (!$loginSuccess) {
+                $envAdminUser = (string)Config::get('ADMIN_USERNAME', 'admin');
+                $envAdminHash = (string)Config::get('ADMIN_PASSWORD_HASH', '');
+                if ($username === $envAdminUser && $envAdminHash !== '' && password_verify($password, $envAdminHash)) {
+                    $loginSuccess = true;
+                    $userObj = [
+                        'id'       => 1,
+                        'username' => $envAdminUser,
+                        'role'     => 'admin'
+                    ];
+                }
+            }
+
+            if ($loginSuccess && $userObj) {
                 // Success: regenerate session ID to prevent session fixation
-                session_regenerate_id(true);
+                @session_regenerate_id(true);
                 $_SESSION['admin_logged_in'] = true;
-                $_SESSION['admin_user_id']   = (int)$user['id'];
-                $_SESSION['admin_username']  = $user['username'];
-                $_SESSION['admin_role']      = $user['role'] ?? 'admin';
+                $_SESSION['admin_user_id']   = $userObj['id'];
+                $_SESSION['admin_username']  = $userObj['username'];
+                $_SESSION['admin_role']      = $userObj['role'];
 
-                $pdo->prepare("UPDATE admin_users SET last_login_at = NOW() WHERE id = :id")->execute([':id' => $user['id']]);
+                // Critical for Vercel Serverless: issue stateless HMAC-signed cookie
+                Security::setAdminAuthCookie($userObj['id'], $userObj['username'], $userObj['role']);
                 RateLimiter::clear("admin_login:{$clientIp}", 'admin_login');
 
                 header("Location: index.php");

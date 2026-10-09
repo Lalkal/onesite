@@ -8,7 +8,14 @@ use LoganX\Security;
 use LoganX\Config;
 use LoganX\SupabaseStorage;
 
-$pdo = Database::getConnection();
+$pdo = null;
+$dbError = null;
+try {
+    $pdo = Database::getConnection();
+} catch (\Throwable $e) {
+    $dbError = $e->getMessage();
+    Security::log('warning', "Database connection unavailable in CMS resources: " . $dbError);
+}
 $message = null;
 $error = null;
 
@@ -29,10 +36,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $csrf = $_POST['csrf_token'] ?? '';
     if (!Security::validateCsrfToken($csrf)) {
         $error = 'Security session expired. Please reload and try again.';
-    } else {
         $action = $_POST['action'] ?? '';
 
-        if ($action === 'create' || $action === 'update') {
+        if ($pdo === null) {
+            $error = 'Database is currently unreachable (' . ($dbError ?: 'verify DB credentials in Vercel') . '). Cannot save changes.';
+        } elseif ($action === 'create' || $action === 'update') {
             $id          = !empty($_POST['id']) ? (int)$_POST['id'] : null;
             $title       = trim((string)($_POST['title'] ?? ''));
             $slug        = trim((string)($_POST['slug'] ?? ''));
@@ -131,6 +139,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     } elseif ($action === 'update' && $id) {
                         try {
                             if ($storedPath) {
+                                // Trigger cleanup of replaced file in Supabase & local storage
+                                $oldStmt = $pdo->prepare("SELECT stored_file_path FROM download_resources WHERE id = :id LIMIT 1");
+                                $oldStmt->execute([':id' => $id]);
+                                $oldFile = (string)$oldStmt->fetchColumn();
+
+                                if ($oldFile !== '' && $oldFile !== $storedPath) {
+                                    if ($isSupabaseReady && (str_starts_with($oldFile, 'supabase://') || str_starts_with($oldFile, 'downloads/'))) {
+                                        SupabaseStorage::deleteFile($oldFile);
+                                    }
+                                    $localOld = Config::storagePath() . '/' . basename($oldFile);
+                                    if (file_exists($localOld) && is_file($localOld)) {
+                                        @unlink($localOld);
+                                    }
+                                }
+
                                 $stmt = $pdo->prepare(
                                     "UPDATE download_resources 
                                      SET slug = :slug, title = :title, description = :desc, 
@@ -172,7 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     ':id'     => $id
                                 ]);
                             }
-                            $message = "Resource '{$title}' updated successfully! Website downloads are updated.";
+                            $message = "Resource '{$title}' updated successfully! File synchronized with {$supabaseBucket}.";
                         } catch (\PDOException $e) {
                             $error = 'Failed to update resource: ' . $e->getMessage();
                         }
@@ -186,15 +209,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $message = 'Resource status updated!';
         } elseif ($action === 'delete') {
             $id = (int)($_POST['id'] ?? 0);
-            $stmt = $pdo->prepare("DELETE FROM download_resources WHERE id = :id");
-            $stmt->execute([':id' => $id]);
-            $message = 'Resource deleted successfully from database and website.';
+            if ($id > 0) {
+                // Fetch resource details to trigger file deletion from Supabase Storage
+                $fetchStmt = $pdo->prepare("SELECT stored_file_path, title FROM download_resources WHERE id = :id LIMIT 1");
+                $fetchStmt->execute([':id' => $id]);
+                $targetRes = $fetchStmt->fetch();
+
+                if ($targetRes) {
+                    $targetPath = (string)($targetRes['stored_file_path'] ?? '');
+
+                    // 1. Trigger deletion in Supabase Coral Bucket if applicable
+                    if ($isSupabaseReady && !empty($targetPath) && (str_starts_with($targetPath, 'supabase://') || str_starts_with($targetPath, 'downloads/'))) {
+                        SupabaseStorage::deleteFile($targetPath);
+                    }
+
+                    // 2. Trigger deletion of local disk copy if present
+                    $localTarget = Config::storagePath() . '/' . basename($targetPath);
+                    if (file_exists($localTarget) && is_file($localTarget)) {
+                        @unlink($localTarget);
+                    }
+
+                    // 3. Delete database record
+                    $stmt = $pdo->prepare("DELETE FROM download_resources WHERE id = :id");
+                    $stmt->execute([':id' => $id]);
+                    $message = "Resource '{$targetRes['title']}' and its file in {$supabaseBucket} deleted successfully.";
+                } else {
+                    $error = 'Resource not found.';
+                }
+            }
         }
     }
 }
 
-// Fetch all resources
-$resources = $pdo->query("SELECT * FROM download_resources ORDER BY id ASC")->fetchAll();
+// Fetch all resources safely
+$resources = [];
+if ($pdo !== null) {
+    try {
+        $resources = $pdo->query("SELECT * FROM download_resources ORDER BY id ASC")->fetchAll();
+    } catch (\Throwable $e) {
+        $dbError = $e->getMessage();
+    }
+}
+if (empty($resources)) {
+    $resources = [
+        [
+            'id'                  => 1,
+            'slug'                => 'windows-app',
+            'title'               => 'LOGANX Desktop Studio (Windows App)',
+            'description'         => 'Official desktop client for LOGANX web studio, offline editor, asset manager, and site synchronizer.',
+            'version'             => '1.2.0',
+            'file_size_bytes'     => 805,
+            'original_filename'   => 'loganx_windows_studio_v1_2.zip',
+            'stored_file_path'    => 'downloads/loganx_windows_studio_v1_2.zip',
+            'is_active'           => 1,
+            'download_limit'      => 5,
+            'token_expiry_hours'  => 24,
+            'created_at'          => date('Y-m-d H:i:s'),
+            'updated_at'          => date('Y-m-d H:i:s')
+        ],
+        [
+            'id'                  => 2,
+            'slug'                => 'starter-kit',
+            'title'               => 'LOGANX Business Website Starter Kit',
+            'description'         => 'Ready-to-deploy multi-page responsive HTML5/CSS3 commercial template with lead capture forms and analytics.',
+            'version'             => '2.0.0',
+            'file_size_bytes'     => 387,
+            'original_filename'   => 'loganx_starter_kit.zip',
+            'stored_file_path'    => 'downloads/loganx_starter_kit.zip',
+            'is_active'           => 1,
+            'download_limit'      => 5,
+            'token_expiry_hours'  => 24,
+            'created_at'          => date('Y-m-d H:i:s'),
+            'updated_at'          => date('Y-m-d H:i:s')
+        ]
+    ];
+}
 $csrf = Security::generateCsrfToken();
 ?>
 <!DOCTYPE html>
@@ -347,6 +436,23 @@ $csrf = Security::generateCsrfToken();
         </span>
       </div>
     </div>
+
+    <?php if ($dbError): ?>
+      <div style="background:rgba(255,184,77,.1);border:1px solid rgba(255,184,77,.35);color:#ffdc99;padding:16px 20px;border-radius:14px;margin-bottom:24px;font-size:13px;line-height:1.6;">
+        <div style="font-size:14px;font-weight:800;color:#ffb84d;margin-bottom:4px;">⚠️ Live Database Connection Notice</div>
+        <div>The database is currently unreachable: <code><?= Security::e($dbError) ?></code></div>
+        <div style="margin-top:8px;">
+          Showing fallback resource catalog. To enable live database synchronization on Vercel:
+          Open <strong>Vercel Settings &rarr; Environment Variables</strong> and add:
+          <code style="background:rgba(0,0,0,.3);padding:2px 6px;border-radius:4px;">DB_CONNECTION=pgsql</code>, 
+          <code style="background:rgba(0,0,0,.3);padding:2px 6px;border-radius:4px;">DB_HOST=...</code>, 
+          <code style="background:rgba(0,0,0,.3);padding:2px 6px;border-radius:4px;">DB_PORT=5432</code>, 
+          <code style="background:rgba(0,0,0,.3);padding:2px 6px;border-radius:4px;">DB_DATABASE=postgres</code>, 
+          <code style="background:rgba(0,0,0,.3);padding:2px 6px;border-radius:4px;">DB_USERNAME=postgres</code>, 
+          <code style="background:rgba(0,0,0,.3);padding:2px 6px;border-radius:4px;">DB_PASSWORD=...</code>
+        </div>
+      </div>
+    <?php endif; ?>
 
     <?php if ($message): ?>
       <div class="alert-success">✓ <?= Security::e($message) ?></div>

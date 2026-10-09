@@ -4,9 +4,9 @@ declare(strict_types=1);
 // Prevent direct execution notices
 error_reporting(E_ALL);
 date_default_timezone_set('UTC');
-
-require_once __DIR__ . '/vendor/autoload.php';
-
+if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+    require_once __DIR__ . '/vendor/autoload.php';
+}
 // Fallback PSR-4 autoloader for LoganX namespace if vendor autoloader isn't updated
 spl_autoload_register(function ($class) {
     $prefix = 'LoganX\\';

@@ -8,10 +8,21 @@ use LoganX\Config;
 
 Security::startSession();
 
+// Check native session first; fallback to signed stateless auth cookie if session was lost in serverless container
 if (empty($_SESSION['admin_user_id']) || empty($_SESSION['admin_logged_in'])) {
-    $redirectUrl = Config::appUrl() . '/admin/login.php';
-    header("Location: {$redirectUrl}");
-    exit;
+    $cookieToken = $_COOKIE['lx_admin_auth'] ?? null;
+    $validData = Security::verifyAdminAuthToken($cookieToken);
+
+    if ($validData) {
+        $_SESSION['admin_logged_in'] = true;
+        $_SESSION['admin_user_id']   = (int)$validData['uid'];
+        $_SESSION['admin_username']  = (string)$validData['user'];
+        $_SESSION['admin_role']      = (string)($validData['role'] ?? 'admin');
+    } else {
+        $redirectUrl = Config::appUrl() . '/admin/login.php';
+        header("Location: {$redirectUrl}");
+        exit;
+    }
 }
 
 $adminUsername = $_SESSION['admin_username'] ?? 'Admin';

@@ -6,7 +6,14 @@ require_once __DIR__ . '/auth_check.php';
 use LoganX\Database;
 use LoganX\Security;
 
-$pdo = Database::getConnection();
+$pdo = null;
+$dbError = null;
+try {
+    $pdo = Database::getConnection();
+} catch (\Throwable $e) {
+    $dbError = $e->getMessage();
+    Security::log('warning', "Database connection unavailable in admin logs: " . $dbError);
+}
 
 $filterStatus = !empty($_GET['status']) ? trim($_GET['status']) : null;
 $filterResource = !empty($_GET['resource_id']) ? (int)$_GET['resource_id'] : null;
@@ -29,11 +36,18 @@ if ($filterResource) {
 
 $sql .= " ORDER BY dl.downloaded_at DESC LIMIT 150";
 
-$stmt = $pdo->prepare($sql);
-$stmt->execute($params);
-$logs = $stmt->fetchAll();
-
-$resources = $pdo->query("SELECT id, title FROM download_resources ORDER BY title ASC")->fetchAll();
+$logs = [];
+$resources = [];
+if ($pdo !== null) {
+    try {
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        $logs = $stmt->fetchAll();
+        $resources = $pdo->query("SELECT id, title FROM download_resources ORDER BY title ASC")->fetchAll();
+    } catch (\Throwable $e) {
+        $dbError = $e->getMessage();
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -97,6 +111,13 @@ $resources = $pdo->query("SELECT id, title FROM download_resources ORDER BY titl
       <h1>Download Audit Logs</h1>
       <p style="color:var(--muted);font-size:14px;margin-top:4px;">Security and delivery logs for all file stream attempts, IP tracking, and token enforcement.</p>
     </div>
+
+    <?php if ($dbError): ?>
+      <div style="background:rgba(255,184,77,.1);border:1px solid rgba(255,184,77,.35);color:#ffdc99;padding:16px 20px;border-radius:14px;margin-bottom:24px;font-size:13px;line-height:1.6;">
+        <div style="font-size:14px;font-weight:800;color:#ffb84d;margin-bottom:4px;">⚠️ Live Database Connection Notice</div>
+        <div>The database is currently unreachable: <code><?= Security::e($dbError) ?></code>. File stream audit logs will record to database once connected.</div>
+      </div>
+    <?php endif; ?>
 
     <form method="GET" action="logs.php" class="filter-bar">
       <div class="filter-group">

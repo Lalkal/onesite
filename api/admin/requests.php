@@ -7,7 +7,14 @@ use LoganX\Database;
 use LoganX\Security;
 use LoganX\EmailQueueService;
 
-$pdo = Database::getConnection();
+$pdo = null;
+$dbError = null;
+try {
+    $pdo = Database::getConnection();
+} catch (\Throwable $e) {
+    $dbError = $e->getMessage();
+    Security::log('warning', "Database connection unavailable in admin requests: " . $dbError);
+}
 $message = null;
 $error = null;
 
@@ -83,12 +90,18 @@ if ($filterDateTo) {
 
 $sql .= " GROUP BY vdr.id ORDER BY vdr.verified_at DESC LIMIT 100";
 
-$stmt = $pdo->prepare($sql);
-$stmt->execute($params);
-$requests = $stmt->fetchAll();
-
-// Fetch resources for filter dropdown
-$resources = $pdo->query("SELECT id, title FROM download_resources ORDER BY title ASC")->fetchAll();
+$requests = [];
+$resources = [];
+if ($pdo !== null) {
+    try {
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        $requests = $stmt->fetchAll();
+        $resources = $pdo->query("SELECT id, title FROM download_resources ORDER BY title ASC")->fetchAll();
+    } catch (\Throwable $e) {
+        $dbError = $e->getMessage();
+    }
+}
 $csrf = Security::generateCsrfToken();
 ?>
 <!DOCTYPE html>
@@ -160,6 +173,13 @@ $csrf = Security::generateCsrfToken();
       <h1>Verified Requests & Email Deliveries</h1>
       <p style="color:var(--muted);font-size:14px;margin-top:4px;">Filter verification events, monitor email dispatch status, retry transient SMTP failures, and revoke links.</p>
     </div>
+
+    <?php if ($dbError): ?>
+      <div style="background:rgba(255,184,77,.1);border:1px solid rgba(255,184,77,.35);color:#ffdc99;padding:16px 20px;border-radius:14px;margin-bottom:24px;font-size:13px;line-height:1.6;">
+        <div style="font-size:14px;font-weight:800;color:#ffb84d;margin-bottom:4px;">⚠️ Live Database Connection Notice</div>
+        <div>The database is currently unreachable: <code><?= Security::e($dbError) ?></code>. Verification requests and email deliveries will record to database once connected.</div>
+      </div>
+    <?php endif; ?>
 
     <?php if ($message): ?>
       <div class="alert-success"><?= Security::e($message) ?></div>

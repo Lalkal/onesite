@@ -10,13 +10,16 @@
   // Fetch CSRF token
   async function fetchCsrfToken() {
     try {
-      const res = await fetch('api/csrf-token.php', {
+      const res = await fetch('/api/csrf-token.php', {
         credentials: 'same-origin',
         headers: { 'Accept': 'application/json' }
       });
       if (res.ok) {
-        const data = await res.json();
-        csrfToken = data.csrf_token || '';
+        const ct = res.headers.get('content-type') || '';
+        if (ct.includes('application/json')) {
+          const data = await res.json();
+          csrfToken = data.csrf_token || '';
+        }
       }
     } catch (e) {
       console.warn('Could not pre-fetch CSRF token:', e);
@@ -26,8 +29,11 @@
   // Fetch Active Resources from CMS Database & Dynamically Update Site
   async function syncActiveResources() {
     try {
-      const res = await fetch('api/resources.php');
+      const res = await fetch('/api/resources.php');
       if (!res.ok) return;
+
+      const ct = res.headers.get('content-type') || '';
+      if (!ct.includes('application/json')) return;
 
       const data = await res.json();
       if (!data.success || !Array.isArray(data.resources) || data.resources.length === 0) {
@@ -290,7 +296,7 @@
         csrf_token: csrfToken
       };
 
-      const response = await fetch('api/request-download.php', {
+      const response = await fetch('/api/request-download.php', {
         method: 'POST',
         credentials: 'same-origin',
         headers: {
@@ -300,25 +306,52 @@
         body: JSON.stringify(payload)
       });
 
-      const data = await response.json();
+      const responseText = await response.text();
+      let data = null;
 
-      if (response.ok && data.success) {
+      // Check if response was blocked or redirected by Vercel Authentication / SSO
+      if (
+        response.redirected ||
+        responseText.includes('Protected by Vercel Authentication') ||
+        responseText.includes('sso-api') ||
+        responseText.includes('<title>Login – Vercel</title>') ||
+        responseText.includes('Continue with SAML SSO')
+      ) {
+        showError('🔒 API request blocked by Vercel Deployment Protection. In your Vercel Project Settings, disable "Vercel Authentication" under Deployment Protection so visitors can download files.');
+        return;
+      }
+
+      try {
+        data = JSON.parse(responseText);
+      } catch (jsonErr) {
+        console.warn('Non-JSON response received:', responseText.substring(0, 200));
+      }
+
+      if (response.ok && data && data.success) {
         // Show success / anti-enumeration confirmation state
         document.getElementById('lxFormView').style.display = 'none';
         document.getElementById('lxSuccessView').style.display = 'block';
         if (data.message) {
           document.getElementById('lxSuccessText').textContent = data.message;
         }
-      } else if (response.status === 403 && data.message && data.message.includes('expired') && !isRetry) {
+      } else if (response.status === 403 && data && data.message && data.message.includes('expired') && !isRetry) {
         // Token was stale: seamlessly fetch a fresh signed token and retry once
         await fetchCsrfToken();
         return handleFormSubmit(null, true);
+      } else if (data && data.message) {
+        showError(data.message);
+      } else if (response.status === 500) {
+        showError('Server configuration error (500). Please verify database and SMTP settings in Vercel.');
       } else {
-        showError(data.message || 'Unable to process your download request. Please try again.');
+        showError(`Service temporarily unavailable (${response.status} ${response.statusText}). Please try again later.`);
       }
     } catch (err) {
       console.error('Request failed:', err);
-      showError('Network connection error. Please verify your connection and try again.');
+      if (!navigator.onLine) {
+        showError('You appear to be offline. Please verify your connection and try again.');
+      } else {
+        showError('Communication error: ' + (err.message || 'Unable to connect to server') + '. If Vercel Deployment Protection is active, please disable it in Vercel Settings.');
+      }
     } finally {
       btn.disabled = false;
       spinner.style.display = 'none';

@@ -114,6 +114,67 @@ class Security
         return false;
     }
 
+    public static function createAdminAuthToken(int $userId, string $username, string $role = 'admin', int $ttlSeconds = 86400): string
+    {
+        $payload = json_encode([
+            'uid'  => $userId,
+            'user' => $username,
+            'role' => $role,
+            'exp'  => time() + $ttlSeconds
+        ]);
+        $b64 = rtrim(strtr(base64_encode((string)$payload), '+/', '-_'), '=');
+        $sig = hash_hmac('sha256', $b64, self::getAppSecret());
+        return "{$b64}.{$sig}";
+    }
+
+    public static function verifyAdminAuthToken(?string $token): ?array
+    {
+        if (empty($token) || !str_contains($token, '.')) {
+            return null;
+        }
+        [$b64, $sig] = explode('.', $token, 2);
+        $expected = hash_hmac('sha256', $b64, self::getAppSecret());
+        if (!hash_equals($expected, $sig)) {
+            return null;
+        }
+        $json = base64_decode(strtr($b64, '-_', '+/'));
+        if (!$json) {
+            return null;
+        }
+        $data = json_decode($json, true);
+        if (!is_array($data) || empty($data['exp']) || (int)$data['exp'] < time()) {
+            return null;
+        }
+        return $data;
+    }
+
+    public static function setAdminAuthCookie(int $userId, string $username, string $role = 'admin'): void
+    {
+        $token = self::createAdminAuthToken($userId, $username, $role);
+        $isHttps = self::isHttps();
+        setcookie('lx_admin_auth', $token, [
+            'expires'  => time() + 86400,
+            'path'     => '/',
+            'domain'   => '',
+            'secure'   => $isHttps,
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+    }
+
+    public static function clearAdminAuthCookie(): void
+    {
+        $isHttps = self::isHttps();
+        setcookie('lx_admin_auth', '', [
+            'expires'  => time() - 3600,
+            'path'     => '/',
+            'domain'   => '',
+            'secure'   => $isHttps,
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+    }
+
     public static function e(mixed $value): string
     {
         return htmlspecialchars((string)$value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');

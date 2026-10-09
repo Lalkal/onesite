@@ -7,38 +7,58 @@ use LoganX\Database;
 use LoganX\Security;
 use LoganX\Config;
 
-$pdo = Database::getConnection();
+$pdo = null;
+$dbError = null;
+try {
+    $pdo = Database::getConnection();
+} catch (\Throwable $e) {
+    $dbError = $e->getMessage();
+    Security::log('warning', "Database connection unavailable in admin index: " . $dbError);
+}
 
-// Fetch summary metrics
-$totalVerifications = (int)$pdo->query("SELECT COUNT(*) FROM email_verification_tokens")->fetchColumn();
-$totalVerified = (int)$pdo->query("SELECT COUNT(*) FROM verified_download_requests")->fetchColumn();
-$totalSentEmails = (int)$pdo->query("SELECT COUNT(*) FROM email_delivery_queue WHERE status = 'sent'")->fetchColumn();
-$totalFailedEmails = (int)$pdo->query("SELECT COUNT(*) FROM email_delivery_queue WHERE status = 'failed'")->fetchColumn();
-$totalPendingEmails = (int)$pdo->query("SELECT COUNT(*) FROM email_delivery_queue WHERE status IN ('pending', 'processing')")->fetchColumn();
-$totalDownloads = (int)$pdo->query("SELECT COUNT(*) FROM download_logs WHERE download_status = 'success'")->fetchColumn();
-$totalActiveResources = (int)$pdo->query("SELECT COUNT(*) FROM download_resources WHERE is_active = 1")->fetchColumn();
+$totalVerifications = 0;
+$totalVerified = 0;
+$totalSentEmails = 0;
+$totalFailedEmails = 0;
+$totalPendingEmails = 0;
+$totalDownloads = 0;
+$totalActiveResources = 2;
+$recentRequests = [];
+$recentDownloads = [];
 
-// Fetch recent verification requests
-$stmtRecentReqs = $pdo->query(
-    "SELECT vdr.id, vdr.email, vdr.verified_at, vdr.delivery_status, vdr.delivery_attempts,
-            r.title AS resource_title, edq.id AS queue_id, edq.last_error_message
-     FROM verified_download_requests vdr
-     JOIN download_resources r ON r.id = vdr.resource_id
-     LEFT JOIN email_delivery_queue edq ON edq.verified_download_request_id = vdr.id
-     ORDER BY vdr.verified_at DESC
-     LIMIT 10"
-);
-$recentRequests = $stmtRecentReqs->fetchAll();
+if ($pdo !== null) {
+    try {
+        $totalVerifications = (int)$pdo->query("SELECT COUNT(*) FROM email_verification_tokens")->fetchColumn();
+        $totalVerified = (int)$pdo->query("SELECT COUNT(*) FROM verified_download_requests")->fetchColumn();
+        $totalSentEmails = (int)$pdo->query("SELECT COUNT(*) FROM email_delivery_queue WHERE status = 'sent'")->fetchColumn();
+        $totalFailedEmails = (int)$pdo->query("SELECT COUNT(*) FROM email_delivery_queue WHERE status = 'failed'")->fetchColumn();
+        $totalPendingEmails = (int)$pdo->query("SELECT COUNT(*) FROM email_delivery_queue WHERE status IN ('pending', 'processing')")->fetchColumn();
+        $totalDownloads = (int)$pdo->query("SELECT COUNT(*) FROM download_logs WHERE download_status = 'success'")->fetchColumn();
+        $totalActiveResources = (int)$pdo->query("SELECT COUNT(*) FROM download_resources WHERE is_active = 1")->fetchColumn();
 
-// Fetch recent downloads
-$stmtRecentDownloads = $pdo->query(
-    "SELECT dl.*, r.title AS resource_title
-     FROM download_logs dl
-     JOIN download_resources r ON r.id = dl.resource_id
-     ORDER BY dl.downloaded_at DESC
-     LIMIT 10"
-);
-$recentDownloads = $stmtRecentDownloads->fetchAll();
+        $stmtRecentReqs = $pdo->query(
+            "SELECT vdr.id, vdr.email, vdr.verified_at, vdr.delivery_status, vdr.delivery_attempts,
+                    r.title AS resource_title, edq.id AS queue_id, edq.last_error_message
+             FROM verified_download_requests vdr
+             JOIN download_resources r ON r.id = vdr.resource_id
+             LEFT JOIN email_delivery_queue edq ON edq.verified_download_request_id = vdr.id
+             ORDER BY vdr.verified_at DESC
+             LIMIT 10"
+        );
+        $recentRequests = $stmtRecentReqs->fetchAll();
+
+        $stmtRecentDownloads = $pdo->query(
+            "SELECT dl.*, r.title AS resource_title
+             FROM download_logs dl
+             JOIN download_resources r ON r.id = dl.resource_id
+             ORDER BY dl.downloaded_at DESC
+             LIMIT 10"
+        );
+        $recentDownloads = $stmtRecentDownloads->fetchAll();
+    } catch (\Throwable $e) {
+        $dbError = $e->getMessage();
+    }
+}
 
 $csrf = Security::generateCsrfToken();
 ?>
@@ -238,6 +258,23 @@ $csrf = Security::generateCsrfToken();
       <h1>Delivery & Verification Dashboard</h1>
       <p class="subtitle">Real-time metrics for digital downloads, verification token states, and automated SMTP delivery.</p>
     </div>
+
+    <?php if ($dbError): ?>
+      <div style="background:rgba(255,184,77,.1);border:1px solid rgba(255,184,77,.35);color:#ffdc99;padding:16px 20px;border-radius:14px;margin-bottom:24px;font-size:13px;line-height:1.6;">
+        <div style="font-size:14px;font-weight:800;color:#ffb84d;margin-bottom:4px;">⚠️ Live Database Connection Notice</div>
+        <div>The database is currently unreachable: <code><?= Security::e($dbError) ?></code></div>
+        <div style="margin-top:8px;">
+          Showing default metrics. To connect your live Supabase / PostgreSQL database on Vercel:
+          Open <strong>Vercel Settings &rarr; Environment Variables</strong> and add your Supabase credentials:
+          <code style="background:rgba(0,0,0,.3);padding:2px 6px;border-radius:4px;">DB_CONNECTION=pgsql</code>, 
+          <code style="background:rgba(0,0,0,.3);padding:2px 6px;border-radius:4px;">DB_HOST=...</code>, 
+          <code style="background:rgba(0,0,0,.3);padding:2px 6px;border-radius:4px;">DB_PORT=5432</code>, 
+          <code style="background:rgba(0,0,0,.3);padding:2px 6px;border-radius:4px;">DB_DATABASE=postgres</code>, 
+          <code style="background:rgba(0,0,0,.3);padding:2px 6px;border-radius:4px;">DB_USERNAME=postgres</code>, 
+          <code style="background:rgba(0,0,0,.3);padding:2px 6px;border-radius:4px;">DB_PASSWORD=...</code>
+        </div>
+      </div>
+    <?php endif; ?>
 
     <div class="stats-grid">
       <div class="stat-card">

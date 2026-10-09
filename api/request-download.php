@@ -48,7 +48,17 @@ if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email
 }
 
 // 3. Resolve Resource
-$pdo = Database::getConnection();
+try {
+    $pdo = Database::getConnection();
+} catch (\Throwable $e) {
+    Security::log('error', "Database connection failed in request-download: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Database connection failed: please verify your DB environment variables (DB_HOST, DB_USERNAME, DB_PASSWORD) in Vercel Settings.'
+    ]);
+    exit;
+}
 $resource = null;
 
 if (!empty($resourceId) && is_numeric($resourceId)) {
