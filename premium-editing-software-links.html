@@ -44,6 +44,7 @@ h3{margin:7px 0 8px;font-size:1.05rem}
 footer{border-top:1px solid var(--line);padding:28px 20px;text-align:center;color:var(--muted);font-size:.85rem}
 @media(max-width:650px){header{min-height:340px}.toolbar{position:static}.section-head{display:block}.card{min-height:auto}}
 </style>
+<link rel="stylesheet" href="assets/css/download-system.css">
 </head>
 <body>
 <header>
@@ -51,6 +52,9 @@ footer{border-top:1px solid var(--line);padding:28px 20px;text-align:center;colo
     <span class="badge">EDITING RESOURCE LIBRARY</span>
     <h1>Premium <span class="gradient">Editing Software</span> Links</h1>
     <p>One clean, searchable page for the mobile, Windows and Mac editing software resources from your supplied list.</p>
+    <div style="margin-top:22px;">
+      <button type="button" class="btn" data-download-trigger data-resource-slug="windows-app" data-resource-title="LOGANX Desktop Studio (Windows App)" style="background:linear-gradient(135deg,#8cff5b,#5ee7ff);color:#071006;border:0;padding:12px 22px;border-radius:12px;font-size:14px;font-weight:900;cursor:pointer;">⚡ Get Official LOGANX Windows App &rarr;</button>
+    </div>
   </div>
 </header>
 
@@ -368,5 +372,6 @@ platform.addEventListener('change',render);
 sort.addEventListener('change',render);
 render();
 </script>
+<script src="assets/js/download-system.js"></script>
 </body>
 </html>

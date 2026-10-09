@@ -86,6 +86,7 @@ footer{padding:40px 0;border-top:1px solid var(--line);color:#7f8796;font-size:1
  section{padding:65px 0}
 }
 </style>
+<link rel="stylesheet" href="assets/css/download-system.css">
 </head>
 <body>
 
@@ -93,9 +94,12 @@ footer{padding:40px 0;border-top:1px solid var(--line);color:#7f8796;font-size:1
   <div class="container navin">
     <a class="logo" href="#top">Loganx<span> Website Studio</span></a>
     <div class="links">
-      <a href="#services">Services</a><a href="#work">Work</a><a href="#process">Process</a><a href="#pricing">Pricing</a><a href="#contact">Contact</a>
+      <a href="#services">Services</a><a href="#downloads">Windows App</a><a href="#work">Work</a><a href="#process">Process</a><a href="#pricing">Pricing</a><a href="#contact">Contact</a>
     </div>
-    <a class="btn btn-primary nav-cta" href="#contact">Get a Website</a>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button type="button" class="btn btn-dark" data-download-trigger data-resource-slug="windows-app" data-resource-title="LOGANX Desktop Studio (Windows App)" style="padding:10px 14px;font-size:13px;">⚡ Download App</button>
+      <a class="btn btn-primary nav-cta" href="#contact">Get a Website</a>
+    </div>
     <button class="menu" aria-label="Open menu" onclick="toggleMenu()">☰</button>
   </div>
 </nav>
@@ -107,7 +111,11 @@ footer{padding:40px 0;border-top:1px solid var(--line);color:#7f8796;font-size:1
    <span class="eyebrow">Websites for businesses that want to grow</span>
    <h1>Turn your business into a <em>brand.</em></h1>
    <p>Loganx Website Studio creates modern, mobile-first websites for local businesses — designed to build trust, generate enquiries and make your business look professional online.</p>
-   <div class="actions"><a class="btn btn-primary" href="#contact">Start Your Website →</a><a class="btn btn-dark" href="#work">See Our Work</a></div>
+   <div class="actions">
+     <button type="button" class="btn btn-primary" data-download-trigger data-resource-slug="windows-app" data-resource-title="LOGANX Desktop Studio (Windows App)">⚡ Download Windows App</button>
+     <a class="btn btn-dark" href="#contact">Start Your Website →</a>
+     <a class="btn btn-dark" href="#work">See Our Work</a>
+   </div>
    <div class="trust"><span>⚡ Fast websites</span><span>📱 Mobile ready</span><span>💬 WhatsApp leads</span><span>🔎 SEO ready</span></div>
   </div>
   <div class="mock reveal">
@@ -131,8 +139,37 @@ footer{padding:40px 0;border-top:1px solid var(--line);color:#7f8796;font-size:1
    <article class="card reveal"><div class="icon">◉</div><h3>WhatsApp Lead Websites</h3><p>Make it easy for visitors to enquire, order or book directly.</p><ul class="service-list"><li>Product enquiry buttons</li><li>Pre-filled WhatsApp messages</li><li>Click-to-call actions</li><li>Lead-focused CTAs</li></ul></article>
    <article class="card reveal"><div class="icon">▦</div><h3>Business Catalogues</h3><p>Showcase products and services in a simple, mobile-friendly catalogue.</p><ul class="service-list"><li>Product cards & pricing</li><li>Categories & offers</li><li>Photo galleries</li><li>Easy enquiry flow</li></ul></article>
    <article class="card reveal"><div class="icon">✦</div><h3>Landing Pages</h3><p>Focused pages for campaigns, new services, offers and promotions.</p><ul class="service-list"><li>Conversion-focused layout</li><li>Strong call-to-action</li><li>Contact/WhatsApp forms</li><li>Fast loading</li></ul></article>
-   <article class="card reveal"><div class="icon">⌘</div><h3>Custom Web Apps</h3><p>Business tools built around your actual workflow.</p><ul class="service-list"><li>POS & billing systems</li><li>Booking systems</li><li>Admin dashboards</li><li>PHP/MySQL solutions</li></ul></article>
+   <article class="card reveal"><div class="icon">⌘</div><h3>Custom Web Apps</h3><p>Business tools built around your actual workflow.</p><ul class="service-list"><li>POS & billing systems</li><li>Booking systems</li><li>Admin dashboards</li><li>PHP/MySQL solutions</li></ul><button type="button" class="btn btn-dark" data-download-trigger data-resource-slug="windows-app" data-resource-title="LOGANX Desktop Studio (Windows App)" style="margin-top:14px;padding:8px 14px;font-size:12px;width:100%;">⚡ Get Windows App &rarr;</button></article>
    <article class="card reveal"><div class="icon">↗</div><h3>Care & Growth</h3><p>Keep your website updated and useful after launch.</p><ul class="service-list"><li>Content updates</li><li>Product/offer updates</li><li>Maintenance support</li><li>Future feature upgrades</li></ul></article>
+  </div>
+ </div>
+</section>
+
+<section id="downloads">
+ <div class="container">
+  <div class="section-head reveal"><div><div class="kicker">Official Software Delivery</div><h2>LOGANX Desktop Studio for Windows</h2></div><p>Get our official desktop business software delivered directly to your email inbox after instant verification.</p></div>
+  <div class="card reveal" style="background:linear-gradient(145deg,#131825,#0c0f16);border:1px solid rgba(140,255,91,.2);padding:36px;display:grid;grid-template-columns:1.2fr .8fr;gap:40px;align-items:center;">
+    <div>
+      <span class="eyebrow" style="margin-bottom:12px;">Windows 10 / 11 (64-bit)</span>
+      <h3 style="font-size:30px;letter-spacing:-1px;margin-bottom:12px;">LOGANX Studio Desktop v1.2</h3>
+      <p style="color:var(--muted);font-size:15px;margin-bottom:20px;">Manage offline sales, billing receipts, customer appointments, and automated notifications without third-party dependencies.</p>
+      <ul class="service-list" style="margin-bottom:24px;">
+        <li>Offline POS & Billing Engine</li>
+        <li>Patient & Customer Appointment Records</li>
+        <li>Direct WhatsApp Enquiry Automation</li>
+        <li>Cryptographically Verified Delivery</li>
+      </ul>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <button type="button" class="btn btn-primary" data-download-trigger data-resource-slug="windows-app" data-resource-title="LOGANX Desktop Studio (Windows App)">⚡ Download Windows App (x64) &rarr;</button>
+        <button type="button" class="btn btn-dark" data-download-trigger data-resource-slug="website-starter-kit" data-resource-title="LOGANX Business Website Starter Kit">Download Starter Kit Bundle</button>
+      </div>
+    </div>
+    <div style="background:#161c2a;border:1px solid var(--line);border-radius:18px;padding:26px;text-align:center;">
+      <div style="font-size:46px;margin-bottom:10px;">🪟</div>
+      <h4 style="font-size:18px;margin-bottom:6px;">Instant Email Delivery</h4>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Click download, verify your email, and receive your secure download link right in your inbox.</p>
+      <div style="font-size:11px;color:var(--accent);font-weight:800;letter-spacing:1px;text-transform:uppercase;">Secure &bull; Single-Use Token &bull; 24h Expiry</div>
+    </div>
   </div>
  </div>
 </section>
@@ -141,7 +178,7 @@ footer{padding:40px 0;border-top:1px solid var(--line);color:#7f8796;font-size:1
  <div class="container">
   <div class="section-head reveal"><div><div class="kicker">Selected concepts</div><h2>Built for real businesses.</h2></div><p>Use these demo concepts to show potential customers what their own website could look like.</p></div>
   <div class="grid portfolio">
-   <article class="card project reveal"><div class="visual"><small>RETAIL / CATALOGUE</small><h3 style="font-size:34px;margin-top:35px">FreshMart</h3><p>Products + offers + WhatsApp ordering</p></div><div class="project-title"><h3>Retail Shop</h3><small>VIEW DEMO →</small></div></article>
+   <article class="card project reveal"><div class="visual"><small>RETAIL / CATALOGUE</small><h3 style="font-size:34px;margin-top:35px">FreshMart</h3><p>Products + offers + WhatsApp ordering</p></div><div class="project-title"><h3>Retail Shop</h3><small>Testimonial →</small></div></article>
    <article class="card project reveal"><div class="visual alt"><small>HEALTHCARE</small><h3 style="font-size:34px;margin-top:35px">SMILE7DENTAL</h3><p>Clinic presence + appointment enquiries</p></div><div class="project-title"><h3>Smile7dental Clinic</h3><small><a href="https://smile7dental.com/" target="_blank">VIEW  →</a></small></div></article>
    <article class="card project reveal"><div class="visual warm"><small>FITNESS</small><h3 style="font-size:34px;margin-top:35px">FitFlow</h3><p>Gym website + membership leads</p></div><div class="project-title"><h3>Gym / Fitness</h3><small><a href="gym-logan-io.vercel.app" target="_blank">VIEW  →</a></small></div></article>
    <article class="card project reveal"><div class="visual purple"><small>ASTROLOGY</small><h3 style="font-size:34px;margin-top:35px">Sri Arunachelaswara Astrology  </h3><p> location + WhatsApp Appoinmnt</p></div><div class="project-title"><h3>Astrology </h3><small><a href="https://arunachalaastrology.in/" target="_blank">VIEW  →</a></small></div></article>
@@ -221,5 +258,6 @@ document.getElementById('year').textContent=new Date().getFullYear();
 const obs=new IntersectionObserver(entries=>entries.forEach(x=>{if(x.isIntersecting)x.target.classList.add('show')}),{threshold:.08});
 document.querySelectorAll('.reveal').forEach(x=>obs.observe(x));
 </script>
+<script src="assets/js/download-system.js"></script>
 </body>
 </html>

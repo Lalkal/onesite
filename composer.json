@@ -1,0 +1,13 @@
+{
+    "name": "loganx/email-verification-downloads",
+    "description": "LOGANX Automated Email Verification & Digital Download Delivery System",
+    "type": "project",
+    "require": {
+        "phpmailer/phpmailer": "^7.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "LoganX\\": "src/"
+        }
+    }
+}

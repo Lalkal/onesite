@@ -1,0 +1,5 @@
+.env
+composer.phar
+storage/logs/*.log
+.vercel/
+vendor/

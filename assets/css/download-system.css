@@ -1,0 +1,318 @@
+/* LOGANX Automated Email Verification & Digital Download Delivery System Styles */
+
+:root {
+  --lx-modal-bg: #0d1017;
+  --lx-modal-panel: #121722;
+  --lx-modal-line: rgba(255, 255, 255, 0.1);
+  --lx-accent: #8cff5b;
+  --lx-accent-hover: #7ae64e;
+  --lx-text: #f6f7fb;
+  --lx-muted: #9da5b5;
+  --lx-danger: #ff5876;
+}
+
+/* Modal Overlay */
+.lx-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(4, 6, 10, 0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.lx-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Modal Dialog Box */
+.lx-modal-box {
+  background: linear-gradient(155deg, #151a26, #0d1017);
+  border: 1px solid var(--lx-modal-line);
+  border-radius: 24px;
+  box-shadow: 0 35px 110px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(140, 255, 91, 0.12);
+  width: 100%;
+  max-width: 490px;
+  padding: 34px 30px;
+  position: relative;
+  transform: translateY(20px) scale(0.97);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  color: var(--lx-text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+.lx-modal-overlay.active .lx-modal-box {
+  transform: translateY(0) scale(1);
+}
+
+/* Close Button */
+.lx-modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: 1px solid var(--lx-modal-line);
+  color: var(--lx-muted);
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.2s;
+}
+
+.lx-modal-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Modal Header */
+.lx-modal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border: 1px solid rgba(140, 255, 91, 0.3);
+  background: rgba(140, 255, 91, 0.08);
+  border-radius: 999px;
+  color: var(--lx-accent);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.lx-modal-title {
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -0.8px;
+  line-height: 1.15;
+  margin: 0 0 6px;
+}
+
+.lx-modal-title span {
+  color: var(--lx-accent);
+}
+
+.lx-modal-subtitle {
+  color: var(--lx-muted);
+  font-size: 14px;
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+
+/* Product Info Card inside modal */
+.lx-product-preview {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--lx-modal-line);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.lx-product-icon {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #1d2737, #131a24);
+  border: 1px solid rgba(140, 255, 91, 0.3);
+  color: var(--lx-accent);
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+}
+
+.lx-product-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.lx-product-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 800;
+  color: var(--lx-accent);
+}
+
+.lx-product-name {
+  font-size: 15px;
+  font-weight: 750;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+/* Form inputs & buttons */
+.lx-form-group {
+  margin-bottom: 16px;
+}
+
+.lx-input {
+  width: 100%;
+  padding: 14px 16px;
+  background: #090c13;
+  border: 1px solid var(--lx-modal-line);
+  border-radius: 12px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.lx-input:focus {
+  border-color: var(--lx-accent);
+  box-shadow: 0 0 0 3px rgba(140, 255, 91, 0.12);
+}
+
+.lx-btn-send {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 15px 22px;
+  background: var(--lx-accent);
+  color: #071006;
+  border: 0;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 850;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+}
+
+.lx-btn-send:hover {
+  background: var(--lx-accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(140, 255, 91, 0.25);
+}
+
+.lx-btn-send:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.lx-agreement {
+  font-size: 11px;
+  color: #788294;
+  margin-top: 14px;
+  text-align: center;
+  line-height: 1.45;
+}
+
+/* Feedback message & alerts */
+.lx-alert {
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  margin-bottom: 16px;
+  line-height: 1.4;
+  display: none;
+}
+
+.lx-alert-error {
+  background: rgba(255, 88, 118, 0.12);
+  border: 1px solid rgba(255, 88, 118, 0.3);
+  color: #ff8ca2;
+}
+
+.lx-success-view {
+  display: none;
+  text-align: center;
+  padding: 15px 0 5px;
+}
+
+.lx-success-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  background: rgba(140, 255, 91, 0.12);
+  border: 1px solid rgba(140, 255, 91, 0.35);
+  color: var(--lx-accent);
+  display: grid;
+  place-items: center;
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.lx-success-title {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.lx-success-text {
+  font-size: 14px;
+  color: #cbd2df;
+  line-height: 1.55;
+  margin-bottom: 22px;
+}
+
+.lx-btn-done {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 26px;
+  background: #171d28;
+  color: #fff;
+  border: 1px solid var(--lx-modal-line);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lx-btn-done:hover {
+  background: #202737;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Spinner */
+.lx-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(7, 16, 6, 0.25);
+  border-top-color: #071006;
+  border-radius: 50%;
+  animation: lxSpin 0.7s linear infinite;
+  display: none;
+}
+
+@keyframes lxSpin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 500px) {
+  .lx-modal-box {
+    padding: 26px 20px;
+    border-radius: 20px;
+  }
+}

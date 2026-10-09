@@ -1,0 +1,8 @@
+.env
+.git
+.gitignore
+composer.phar
+tests/
+storage/logs/*.log
+*.bat
+vendor/
