@@ -39,8 +39,28 @@
       "dest": "/api/download.php"
     },
     {
-      "src": "/admin",
+      "src": "/admin/?$",
       "dest": "/api/admin/index.php"
+    },
+    {
+      "src": "/admin/resources(\\.php)?",
+      "dest": "/api/admin/resources.php"
+    },
+    {
+      "src": "/admin/login(\\.php)?",
+      "dest": "/api/admin/login.php"
+    },
+    {
+      "src": "/admin/logout(\\.php)?",
+      "dest": "/api/admin/logout.php"
+    },
+    {
+      "src": "/admin/requests(\\.php)?",
+      "dest": "/api/admin/requests.php"
+    },
+    {
+      "src": "/admin/logs(\\.php)?",
+      "dest": "/api/admin/logs.php"
     },
     {
       "src": "/admin/(.*)",
